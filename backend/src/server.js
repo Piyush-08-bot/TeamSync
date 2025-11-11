@@ -13,11 +13,16 @@ const corsOptions = {
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     
+    // Allow all vercel.app domains for flexibility
+    if (origin && origin.endsWith('.vercel.app')) {
+      return callback(null, true);
+    }
+    
     // List of allowed origins
     const allowedOrigins = [
       'http://localhost:5176',
       'http://localhost:5173',
-      'https://team-sync-frontend.vercel.app'
+      'https://team-sync-beryl.vercel.app'
     ];
     
     if (allowedOrigins.indexOf(origin) !== -1) {
