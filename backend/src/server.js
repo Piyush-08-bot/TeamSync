@@ -16,7 +16,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/chat', chatRoutes);
 
 app.get('/', (req, res) => {
-    res.send("Hello World!")
+    res.send("Welcome to TeamSync")
 })
 
 app.listen(ENV.PORT, () => {
