@@ -73,7 +73,7 @@ This project demonstrates a complete migration from Clerk-based authentication t
 - `POST /api/auth/register` - Register a new user
 - `POST /api/auth/login` - Login user
 
-### Chat
+### Team Collaboration
 
 - `GET /api/chat/stream-token` - Get Stream token (protected route)
 
@@ -87,7 +87,7 @@ This implementation replaces Clerk authentication with a custom JWT-based soluti
    - Implemented JWT middleware for route protection
    - Created auth controller with login/register functions
    - Updated user model for traditional authentication
-   - Secured chat routes with JWT middleware
+   - Secured team collaboration routes with JWT middleware
 
 2. **Frontend Changes:**
    - Removed Clerk package and logic

@@ -19,7 +19,7 @@ const SignInPage = () => {
       <div className="auth-container">
         <div className="auth-card">
           <div className="auth-header">
-            <h1>Sign in to ChatApp</h1>
+            <h1>Sign in to TeamSync</h1>
             <p>Welcome back! Please enter your details.</p>
           </div>
           

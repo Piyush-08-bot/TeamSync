@@ -1,16 +1,43 @@
-# React + Vite
+# Frontend Deployment Guide
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Deploying to Vercel
 
-Currently, two official plugins are available:
+### Prerequisites
+1. Create a [Vercel account](https://vercel.com)
+2. Install Vercel CLI: `npm install -g vercel`
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Environment Variables
+Before deploying, set the following environment variables in your Vercel project settings:
 
-## React Compiler
+```
+VITE_API_BASE_URL=https://your-backend-domain.com/api
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Deployment Steps
 
-## Expanding the ESLint configuration
+1. **Connect to Vercel**:
+   - Push your code to GitHub/GitLab/Bitbucket
+   - Import the project in Vercel dashboard
+   - Select the frontend directory as the root
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+2. **Configure Build Settings**:
+   - Build Command: `npm run build`
+   - Output Directory: `dist`
+   - Install Command: `npm install`
+
+3. **Set Environment Variables**:
+   - Go to Project Settings → Environment Variables
+   - Add `VITE_API_BASE_URL` with your backend URL
+
+4. **Deploy**:
+   - Click "Deploy" to start the deployment
+   - Vercel will automatically build and deploy your app
+
+### Local Development
+- Development: `npm run dev`
+- Build: `npm run build`
+- Preview: `npm run preview`
+
+### API Proxying
+In development, API requests are proxied through Vite to your backend server.
+In production, requests are sent directly to the backend URL specified in `VITE_API_BASE_URL`.

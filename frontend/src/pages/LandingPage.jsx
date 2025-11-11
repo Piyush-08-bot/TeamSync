@@ -17,7 +17,7 @@ const LandingPage = () => {
   return (
     <div className="landing-page">
       <header className="landing-header">
-        <div className="logo">ChatApp</div>
+        <div className="logo">TeamSync</div>
         <nav className="landing-nav">
           <button onClick={handleGetStarted} className="btn-primary">
             {authUser ? 'Go to Dashboard' : 'Sign In'}
@@ -27,9 +27,9 @@ const LandingPage = () => {
 
       <main className="landing-main">
         <section className="hero-section">
-          <h1 className="hero-title">Welcome to ChatApp</h1>
+          <h1 className="hero-title">Welcome to TeamSync</h1>
           <p className="hero-description">
-            A modern chat application built with React and Node.js. Experience seamless communication with our intuitive interface.
+            A modern team collaboration application built with React and Node.js. Experience seamless communication with our intuitive interface.
           </p>
           <button onClick={handleGetStarted} className="btn-large">
             Get Started
@@ -53,7 +53,7 @@ const LandingPage = () => {
       </main>
 
       <footer className="landing-footer">
-        <p>© 2023 ChatApp. All rights reserved.</p>
+        <p>© 2023 TeamSync. All rights reserved.</p>
       </footer>
     </div>
   );

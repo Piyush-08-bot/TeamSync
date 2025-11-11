@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { AUTH_ENDPOINTS } from '../utils/constants';
 
 const AuthContext = createContext();
 
@@ -15,17 +16,32 @@ export const AuthProvider = ({ children }) => {
     const token = localStorage.getItem('token');
     console.log('Token found in localStorage:', token);
     if (token) {
-      // In a real app, you would validate the token with the backend
-      // For now, we'll just set the user as authenticated
-      setAuthUser({ token });
+      // Validate token with backend to get user data
+      validateToken(token);
+    } else {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   }, []);
+
+  const validateToken = async (token) => {
+    try {
+      // In a real app, you would have an endpoint to validate the token
+      // For now, we'll just set the user as authenticated
+      // You could implement a /api/auth/me endpoint to get user data
+      setAuthUser({ token });
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Token validation error:', error);
+      localStorage.removeItem('token');
+      setAuthUser(null);
+      setIsLoading(false);
+    }
+  };
 
   const login = async (email, password) => {
     try {
       console.log('Attempting login with:', { email, password });
-      const res = await fetch('/api/auth/login', {
+      const res = await fetch(AUTH_ENDPOINTS.LOGIN, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -53,7 +69,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (name, email, password) => {
     try {
       console.log('Attempting registration with:', { name, email, password });
-      const res = await fetch('/api/auth/register', {
+      const res = await fetch(AUTH_ENDPOINTS.REGISTER, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -90,6 +106,7 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     logout,
+    validateToken,
   };
 
   return (
