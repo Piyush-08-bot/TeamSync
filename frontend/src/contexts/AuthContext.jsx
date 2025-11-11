@@ -41,6 +41,8 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       console.log('Attempting login with:', { email, password });
+      console.log('API Base URL:', import.meta.env.VITE_API_BASE_URL);
+      console.log('Login endpoint:', AUTH_ENDPOINTS.LOGIN);
       const res = await fetch(AUTH_ENDPOINTS.LOGIN, {
         method: 'POST',
         headers: {
@@ -69,6 +71,8 @@ export const AuthProvider = ({ children }) => {
   const register = async (name, email, password) => {
     try {
       console.log('Attempting registration with:', { name, email, password });
+      console.log('API Base URL:', import.meta.env.VITE_API_BASE_URL);
+      console.log('Register endpoint:', AUTH_ENDPOINTS.REGISTER);
       const res = await fetch(AUTH_ENDPOINTS.REGISTER, {
         method: 'POST',
         headers: {
