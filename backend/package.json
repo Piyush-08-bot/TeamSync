@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon src/server.js",
-    "dev": "node src/server.js"
+    "dev": "node src/server.js",
+    "test:db": "node test-db-connection.js"
   },
   "keywords": [],
   "author": "",

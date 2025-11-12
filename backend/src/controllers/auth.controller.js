@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import { User } from "../models/user.model.js";
+import { connectDB } from "../config/db.js";
 
 // Generate JWT token
 const generateToken = (userId) => {
@@ -30,6 +31,9 @@ export const registerUser = async (req, res) => {
     try {
         console.log("=== Register User Request ===");
         console.log("Request body:", JSON.stringify(req.body, null, 2));
+
+        // Ensure database connection
+        await connectDB();
 
         const { name, email, password } = req.body;
 
@@ -90,6 +94,14 @@ export const registerUser = async (req, res) => {
             return res.status(400).json({ message: "User already exists" });
         }
 
+        // Handle database connection errors
+        if (error.name === 'MongoServerSelectionError' || error.message.includes('buffering timed out')) {
+            return res.status(503).json({
+                message: "Service temporarily unavailable. Please try again later.",
+                error: "Database connection timeout"
+            });
+        }
+
         res.status(500).json({
             message: "Internal server error",
             error: error.message,
@@ -104,6 +116,9 @@ export const loginUser = async (req, res) => {
     try {
         console.log("=== Login User Request ===");
         console.log("Request body:", JSON.stringify(req.body, null, 2));
+
+        // Ensure database connection
+        await connectDB();
 
         const { email, password } = req.body;
 
@@ -154,6 +169,15 @@ export const loginUser = async (req, res) => {
             name: error.name,
             stack: error.stack
         });
+
+        // Handle database connection errors
+        if (error.name === 'MongoServerSelectionError' || error.message.includes('buffering timed out')) {
+            return res.status(503).json({
+                message: "Service temporarily unavailable. Please try again later.",
+                error: "Database connection timeout"
+            });
+        }
+
         res.status(500).json({
             message: "Internal server error",
             error: error.message,

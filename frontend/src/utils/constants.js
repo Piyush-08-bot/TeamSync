@@ -1,6 +1,6 @@
 // API Constants
 const isProduction = import.meta.env.PROD;
-const backendDomain = 'https://team-sync-backend-orcin.vercel.app';
+const backendDomain = 'https://team-sync-backend2.vercel.app';
 
 // In production, use the backend domain directly
 // In development, use the VITE_API_BASE_URL or fallback to proxy

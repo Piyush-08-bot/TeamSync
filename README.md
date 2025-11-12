@@ -38,6 +38,19 @@ This project demonstrates a complete migration from Clerk-based authentication t
    npm run dev
    ```
 
+### Deployment to Vercel
+
+1. Create a new project in Vercel and connect it to your repository
+2. Set the following environment variables in your Vercel project settings:
+   - `MONGO_URI` - Your MongoDB connection string
+   - `JWT_SECRET` - Your JWT secret key
+   - `CLIENT_URL` - Your frontend URL (e.g., https://team-sync-beryl.vercel.app)
+3. Configure the build settings:
+   - Build Command: `npm install`
+   - Output Directory: `.` (default)
+   - Install Command: `npm install`
+4. Add a health check endpoint is available at `/health` to verify the deployment status
+
 ## Frontend
 
 ### Features
@@ -95,3 +108,12 @@ This implementation replaces Clerk authentication with a custom JWT-based soluti
    - Created login/register forms
    - Added JWT token management in localStorage
    - Protected routes using custom authentication context
+
+## Troubleshooting
+
+If you encounter MongoDB connection timeouts on Vercel:
+
+1. Verify that your `MONGO_URI` environment variable is correctly set in Vercel
+2. Check that your MongoDB Atlas cluster allows connections from Vercel's IP addresses
+3. Use the `/health` endpoint to check the database connection status
+4. Ensure your JWT_SECRET is set and is sufficiently complex
