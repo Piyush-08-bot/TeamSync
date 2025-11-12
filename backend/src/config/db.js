@@ -1,21 +1,21 @@
 import mongoose from "mongoose";
-import {ENV} from "./env.js";
+import { ENV } from "./env.js";
 
-export const connectDB = async()=>{
-    try{
+export const connectDB = async () => {
+    try {
         console.log("Attempting to connect to MongoDB...");
         console.log("MONGO_URI:", ENV.MONGO_URI ? "Set" : "Not set");
-        
+
         // Add connection options for better debugging
         const connectionOptions = {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         };
-        
+
         const cnn = await mongoose.connect(ENV.MONGO_URI, connectionOptions);
         console.log("MongoDB Connected Successfully:", cnn.connection.host);
         console.log("Database Name:", cnn.connection.name);
-    }catch(e){
+    } catch (e) {
         console.error("DB Connection Failed:", e);
         console.error("Error details:", {
             message: e.message,

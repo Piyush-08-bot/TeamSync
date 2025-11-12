@@ -367,8 +367,13 @@ body {
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 .connection-actions {
@@ -419,19 +424,19 @@ body {
     .auth-card {
         padding: 1.5rem;
     }
-    
+
     .hero-section {
         padding: 2rem 1rem;
     }
-    
+
     .hero-title {
         font-size: 2rem;
     }
-    
+
     .landing-header {
         padding: 1rem;
     }
-    
+
     .dashboard-main {
         padding: 1rem;
     }

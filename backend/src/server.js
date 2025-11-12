@@ -18,9 +18,9 @@ console.log("================================");
 
 // Add middleware to log all requests
 app.use((req, res, next) => {
-  console.log(`=== ${req.method} ${req.path} ===`);
-  console.log("Request body:", JSON.stringify(req.body, null, 2));
-  next();
+    console.log(`=== ${req.method} ${req.path} ===`);
+    console.log("Request body:", JSON.stringify(req.body, null, 2));
+    next();
 });
 
 // Middleware
@@ -28,32 +28,32 @@ app.use(express.json());
 
 // More permissive CORS configuration
 app.use(cors({
-  origin: true, // Reflect the request origin
-  credentials: true
+    origin: true, // Reflect the request origin
+    credentials: true
 }));
 
 // Add error handling middleware
 app.use((err, req, res, next) => {
-  console.error('=== Global Error Handler ===');
-  console.error('Error occurred:', err);
-  console.error('Error details:', {
-    message: err.message,
-    name: err.name,
-    stack: err.stack
-  });
-  
-  if (err.code === 'EBADCSRFTOKEN') {
-    // Handle CSRF token errors
-    res.status(403).json({ message: 'Form tampered with' });
-  } else {
-    // Handle other errors
-    res.status(500).json({ 
-      message: 'Internal server error',
-      error: err.message,
-      // Remove stack in production
-      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    console.error('=== Global Error Handler ===');
+    console.error('Error occurred:', err);
+    console.error('Error details:', {
+        message: err.message,
+        name: err.name,
+        stack: err.stack
     });
-  }
+
+    if (err.code === 'EBADCSRFTOKEN') {
+        // Handle CSRF token errors
+        res.status(403).json({ message: 'Form tampered with' });
+    } else {
+        // Handle other errors
+        res.status(500).json({
+            message: 'Internal server error',
+            error: err.message,
+            // Remove stack in production
+            stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+        });
+    }
 });
 
 // Routes
