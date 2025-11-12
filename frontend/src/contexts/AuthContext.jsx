@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { AUTH_ENDPOINTS } from '../utils/constants';
 
 const AuthContext = createContext();
 
@@ -41,12 +42,9 @@ export const AuthProvider = ({ children }) => {
     try {
       console.log('=== Login Attempt ===');
       console.log('Email:', email);
+      console.log('Login endpoint:', AUTH_ENDPOINTS.LOGIN);
       
-      // Hardcode the backend URL to ensure it's correct
-      const backendUrl = 'https://team-sync-backend-orcin.vercel.app/api/auth/login';
-      console.log('Login endpoint (hardcoded):', backendUrl);
-      
-      const res = await fetch(backendUrl, {
+      const res = await fetch(AUTH_ENDPOINTS.LOGIN, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -78,12 +76,9 @@ export const AuthProvider = ({ children }) => {
       console.log('=== Registration Attempt ===');
       console.log('Name:', name);
       console.log('Email:', email);
+      console.log('Register endpoint:', AUTH_ENDPOINTS.REGISTER);
       
-      // Hardcode the backend URL to ensure it's correct
-      const backendUrl = 'https://team-sync-backend-orcin.vercel.app/api/auth/register';
-      console.log('Register endpoint (hardcoded):', backendUrl);
-      
-      const res = await fetch(backendUrl, {
+      const res = await fetch(AUTH_ENDPOINTS.REGISTER, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

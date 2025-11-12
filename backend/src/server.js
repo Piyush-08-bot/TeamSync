@@ -7,38 +7,54 @@ import cors from 'cors';
 
 const app = express();
 
-// Middleware
-const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    // Allow all vercel.app domains for flexibility
-    if (origin && origin.endsWith('.vercel.app')) {
-      return callback(null, true);
-    }
-    
-    // List of allowed origins
-    const allowedOrigins = [
-      'http://localhost:5176',
-      'http://localhost:5173',
-      'https://team-sync-beryl.vercel.app'
-    ];
-    
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      // Instead of throwing an error, just allow the request
-      // This prevents 500 errors in production
-      console.log('CORS origin not in allowed list, but allowing anyway:', origin);
-      callback(null, true);
-    }
-  },
-  credentials: true
-};
+// Add early logging to see environment variables
+console.log("=== Server Startup Debug Info ===");
+console.log("NODE_ENV:", ENV.NODE_ENV);
+console.log("PORT:", ENV.PORT);
+console.log("MONGO_URI:", ENV.MONGO_URI ? "Set" : "Not set");
+console.log("JWT_SECRET:", ENV.JWT_SECRET ? "Set" : "Not set");
+console.log("CLIENT_URL:", ENV.CLIENT_URL);
+console.log("================================");
 
-app.use(cors(corsOptions));
+// Add middleware to log all requests
+app.use((req, res, next) => {
+  console.log(`=== ${req.method} ${req.path} ===`);
+  console.log("Request body:", JSON.stringify(req.body, null, 2));
+  next();
+});
+
+// Middleware
 app.use(express.json());
+
+// More permissive CORS configuration
+app.use(cors({
+  origin: true, // Reflect the request origin
+  credentials: true
+}));
+
+// Add error handling middleware
+app.use((err, req, res, next) => {
+  console.error('=== Global Error Handler ===');
+  console.error('Error occurred:', err);
+  console.error('Error details:', {
+    message: err.message,
+    name: err.name,
+    stack: err.stack
+  });
+  
+  if (err.code === 'EBADCSRFTOKEN') {
+    // Handle CSRF token errors
+    res.status(403).json({ message: 'Form tampered with' });
+  } else {
+    // Handle other errors
+    res.status(500).json({ 
+      message: 'Internal server error',
+      error: err.message,
+      // Remove stack in production
+      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
+  }
+});
 
 // Routes
 app.use('/api/auth', authRoutes);
