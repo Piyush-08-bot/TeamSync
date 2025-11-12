@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { AUTH_ENDPOINTS } from '../utils/constants';
 
 const AuthContext = createContext();
 
@@ -40,10 +39,14 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      console.log('Attempting login with:', { email, password });
-      console.log('API Base URL:', import.meta.env.VITE_API_BASE_URL);
-      console.log('Login endpoint:', AUTH_ENDPOINTS.LOGIN);
-      const res = await fetch(AUTH_ENDPOINTS.LOGIN, {
+      console.log('=== Login Attempt ===');
+      console.log('Email:', email);
+      
+      // Hardcode the backend URL to ensure it's correct
+      const backendUrl = 'https://team-sync-backend-orcin.vercel.app/api/auth/login';
+      console.log('Login endpoint (hardcoded):', backendUrl);
+      
+      const res = await fetch(backendUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -52,6 +55,8 @@ export const AuthProvider = ({ children }) => {
       });
 
       console.log('Login response status:', res.status);
+      console.log('Login response headers:', [...res.headers.entries()]);
+      
       const data = await res.json();
       console.log('Login response data:', data);
 
@@ -70,10 +75,15 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (name, email, password) => {
     try {
-      console.log('Attempting registration with:', { name, email, password });
-      console.log('API Base URL:', import.meta.env.VITE_API_BASE_URL);
-      console.log('Register endpoint:', AUTH_ENDPOINTS.REGISTER);
-      const res = await fetch(AUTH_ENDPOINTS.REGISTER, {
+      console.log('=== Registration Attempt ===');
+      console.log('Name:', name);
+      console.log('Email:', email);
+      
+      // Hardcode the backend URL to ensure it's correct
+      const backendUrl = 'https://team-sync-backend-orcin.vercel.app/api/auth/register';
+      console.log('Register endpoint (hardcoded):', backendUrl);
+      
+      const res = await fetch(backendUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -82,6 +92,8 @@ export const AuthProvider = ({ children }) => {
       });
 
       console.log('Registration response status:', res.status);
+      console.log('Registration response headers:', [...res.headers.entries()]);
+      
       const data = await res.json();
       console.log('Registration response data:', data);
 
