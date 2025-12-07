@@ -1,5 +1,6 @@
 import { ENV } from "../config/env.js";
 import { StreamChat } from 'stream-chat';
+import { connectDB } from "../config/db.js";
 
 export const getChatToken = async (req, res) => {
     try {
