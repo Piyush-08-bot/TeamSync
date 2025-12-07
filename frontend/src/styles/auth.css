@@ -1,0 +1,259 @@
+
+
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    background-color: var(--background);
+    color: var(--foreground);
+}
+
+
+.auth-left {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--card);
+    border-right: 1px solid var(--border);
+    padding: 4rem;
+}
+
+.auth-hero {
+    max-width: 480px;
+}
+
+.brand-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+}
+
+.brand-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius);
+}
+
+.brand-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--foreground);
+}
+
+.hero-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    color: var(--foreground);
+}
+
+.hero-subtitle {
+    font-size: 1.125rem;
+    color: var(--muted-foreground);
+    line-height: 1.6;
+    margin-bottom: 2.5rem;
+}
+
+.features-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-bottom: 3rem;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: var(--foreground);
+    font-weight: 500;
+}
+
+.feature-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    background-color: var(--muted);
+    border-radius: 50%;
+    font-size: 1rem;
+}
+
+.cta-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--primary);
+    font-weight: 500;
+    font-size: 1rem;
+    transition: opacity 0.2s;
+}
+
+.cta-button:hover {
+    opacity: 0.8;
+}
+
+
+.auth-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background-color: var(--background);
+}
+
+.auth-form-container {
+    width: 100%;
+    max-width: 400px;
+}
+
+.auth-form-wrapper {
+    
+    padding: 0;
+}
+
+.form-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    margin-bottom: 0.5rem;
+    color: var(--foreground);
+    text-align: center;
+}
+
+.form-subtitle {
+    color: var(--muted-foreground);
+    text-align: center;
+    margin-bottom: 2.5rem;
+    font-size: 0.95rem;
+}
+
+
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: var(--foreground);
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.625rem 0.875rem;
+    background-color: transparent;
+    border: 1px solid var(--input);
+    border-radius: var(--radius);
+    color: var(--foreground);
+    font-size: 0.875rem;
+    transition: border-color 0.2s;
+}
+
+.form-group input::placeholder {
+    color: var(--muted-foreground);
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--ring);
+    
+    box-shadow: 0 0 0 1px var(--ring);
+}
+
+.submit-button {
+    width: 100%;
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    padding: 0.625rem 1.25rem;
+    border-radius: var(--radius);
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-top: 1.5rem;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.submit-button:hover:not(:disabled) {
+    opacity: 0.9;
+}
+
+.submit-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+
+.form-footer {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+}
+
+.toggle-link {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+    margin-left: 0.25rem;
+}
+
+.toggle-link:hover {
+    text-decoration: underline;
+}
+
+.error-message {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--destructive);
+    padding: 0.75rem;
+    border-radius: var(--radius);
+    font-size: 0.875rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    text-align: center;
+}
+
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.auth-form-wrapper {
+    animation: fadeIn 0.4s ease-out;
+}
+
+
+@media (max-width: 1024px) {
+    .auth-left {
+        display: none;
+        
+    }
+
+    .auth-container {
+        justify-content: center;
+    }
+
+    .auth-right {
+        flex: initial;
+        width: 100%;
+        max-width: 500px;
+    }
+}

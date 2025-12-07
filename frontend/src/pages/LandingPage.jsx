@@ -8,9 +8,9 @@ const LandingPage = () => {
 
   const handleGetStarted = () => {
     if (authUser) {
-      navigate('/dashboard');
+      navigate('/');
     } else {
-      navigate('/sign-in');
+      navigate('/auth');
     }
   };
 
@@ -20,7 +20,7 @@ const LandingPage = () => {
         <div className="logo">TeamSync</div>
         <nav className="landing-nav">
           <button onClick={handleGetStarted} className="btn-primary">
-            {authUser ? 'Go to Dashboard' : 'Sign In'}
+            {authUser ? 'Go to App' : 'Sign In'}
           </button>
         </nav>
       </header>

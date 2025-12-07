@@ -1,0 +1,216 @@
+.onboarding-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(125deg,
+            #1a0b2e 0%,
+            #16213e 25%,
+            #0f3460 50%,
+            #533483 75%,
+            #7209b7 100%);
+    padding: 20px;
+}
+
+.onboarding-card {
+    background: rgba(26, 26, 36, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid #374151;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 500px;
+    padding: 40px;
+}
+
+.onboarding-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.onboarding-header h1 {
+    color: #f9fafb;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.onboarding-header p {
+    color: #9ca3af;
+    font-size: 16px;
+}
+
+.onboarding-form .form-group {
+    margin-bottom: 20px;
+}
+
+.onboarding-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #f9fafb;
+    font-size: 14px;
+}
+
+.onboarding-form input,
+.onboarding-form textarea {
+    width: 100%;
+    padding: 12px 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid #374151;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #f9fafb;
+    transition: all 0.2s;
+    box-sizing: border-box;
+}
+
+.onboarding-form input::placeholder,
+.onboarding-form textarea::placeholder {
+    color: #6b7280;
+}
+
+.onboarding-form input:focus,
+.onboarding-form textarea:focus {
+    outline: none;
+    border-color: #7c3aed;
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
+}
+
+.profile-pic-upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.profile-preview {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #7c3aed;
+}
+
+.profile-placeholder {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7c3aed, #3b82f6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    color: white;
+    border: 2px dashed #9ca3af;
+}
+
+.upload-button {
+    background: #7c3aed;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+    border: none;
+}
+
+.upload-button:hover {
+    background: #a855f7;
+    transform: translateY(-1px);
+}
+
+.submit-button {
+    width: 100%;
+    background: #7c3aed;
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.submit-button:hover:not(:disabled) {
+    background: #a855f7;
+    transform: translateY(-1px);
+}
+
+.submit-button:disabled {
+    background: rgba(124, 58, 237, 0.5);
+    cursor: not-allowed;
+    transform: none;
+}
+
+.error-message {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    font-size: 14px;
+}
+
+@media (max-width: 1024px) {
+    .onboarding-card {
+        max-width: 600px;
+        padding: 35px;
+    }
+}
+
+@media (max-width: 768px) {
+    .onboarding-container {
+        padding: 16px;
+    }
+
+    .onboarding-card {
+        padding: 30px 20px;
+    }
+
+    .onboarding-header h1 {
+        font-size: 24px;
+    }
+
+    .onboarding-header p {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .onboarding-container {
+        padding: 12px;
+    }
+
+    .onboarding-card {
+        padding: 24px 16px;
+    }
+
+    .onboarding-header h1 {
+        font-size: 20px;
+    }
+
+    .onboarding-header p {
+        font-size: 13px;
+    }
+
+    .profile-preview,
+    .profile-placeholder {
+        width: 80px;
+        height: 80px;
+    }
+
+    .upload-button {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+
+    .submit-button {
+        padding: 12px;
+        font-size: 15px;
+    }
+}

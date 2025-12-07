@@ -1,13 +1,25 @@
 import express from "express";
-import { getStreamToken } from "../controllers/chat.controller.js";
+import { getChatToken as getStreamToken } from "../controllers/streamController.js";
+import { searchUser, getAllUsers } from "../controllers/user.controller.js";
 import { protectRoute } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
-// Apply JWT protection to all chat routes
+
 router.use(protectRoute);
 
-// Get Stream token
+
 router.get("/stream-token", getStreamToken);
+router.get("/user/search", searchUser);
+router.get("/users", getAllUsers);
+
+
+router.get("/test", (req, res) => {
+    res.json({
+        message: "Chat routes are working!",
+        path: req.path,
+        method: req.method
+    });
+});
 
 export default router;

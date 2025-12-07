@@ -1,0 +1,211 @@
+
+.video-call-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+}
+
+
+.video-call-modal {
+    width: 90%;
+    max-width: 1200px;
+    height: 85vh;
+    background-color: #1a1a1a;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+}
+
+
+.video-call-modal-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+
+.video-call-modal-header {
+    background-color: #202022;
+    border-bottom: 1px solid #323234;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+}
+
+.video-call-modal-info h3 {
+    font-size: 18px;
+    font-weight: bold;
+    color: #f3f4f6;
+    margin: 0 0 4px 0;
+}
+
+.video-call-modal-info span {
+    font-size: 14px;
+    color: #9ca3af;
+}
+
+.video-call-modal-close {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: none;
+    background-color: #323234;
+    color: #ffffff;
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.video-call-modal-close:hover {
+    background-color: #dc2626;
+}
+
+
+.video-call-modal-video {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background-color: #0f0f0f;
+}
+
+
+.video-call-modal-controls {
+    position: absolute;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+}
+
+
+.video-call-modal-loading,
+.video-call-modal-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 40px;
+    text-align: center;
+}
+
+.video-call-modal-loading h2,
+.video-call-modal-error h2 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 16px;
+    color: #f3f4f6;
+}
+
+.video-call-modal-loading p,
+.video-call-modal-error p {
+    font-size: 16px;
+    color: #9ca3af;
+    margin-bottom: 24px;
+}
+
+.loading-spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid rgba(59, 130, 246, 0.3);
+    border-top-color: #3b82f6;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-bottom: 20px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.btn-primary {
+    background-color: #3b82f6;
+    color: #ffffff;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-primary:hover {
+    background-color: #2563eb;
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
+}
+
+
+.video-call-modal .str-video__call-controls {
+    background-color: rgba(32, 32, 34, 0.95) !important;
+    border-radius: 12px !important;
+    padding: 12px 16px !important;
+}
+
+.video-call-modal .str-video__call-controls button {
+    background-color: #323234 !important;
+    color: #ffffff !important;
+    border-radius: 8px !important;
+    transition: all 0.2s ease !important;
+}
+
+.video-call-modal .str-video__call-controls button:hover {
+    background-color: #3e3e42 !important;
+}
+
+.video-call-modal .str-video__call-controls button[data-testid="leave-call-button"] {
+    background-color: #dc2626 !important;
+}
+
+.video-call-modal .str-video__call-controls button[data-testid="leave-call-button"]:hover {
+    background-color: #b91c1c !important;
+}
+
+.video-call-modal .str-video__speaker-layout {
+    background-color: #0f0f0f !important;
+    height: 100%;
+}
+
+.video-call-modal .str-video__participant-view {
+    background-color: #1a1a1a !important;
+    border-radius: 8px !important;
+}
+
+
+@media (max-width: 768px) {
+    .video-call-modal {
+        width: 95%;
+        height: 90vh;
+    }
+
+    .video-call-modal-header {
+        padding: 12px 16px;
+    }
+
+    .video-call-modal-controls {
+        bottom: 16px;
+    }
+}

@@ -1,0 +1,138 @@
+
+.call-ended-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2500;
+    backdrop-filter: blur(8px);
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+
+.call-ended-popup {
+    background-color: #1a1a1a;
+    border-radius: 16px;
+    padding: 40px 32px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+    max-width: 360px;
+    width: 90%;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+
+.call-ended-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+
+.call-ended-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: rgba(220, 38, 38, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+    color: #dc2626;
+}
+
+
+.call-ended-info {
+    margin-bottom: 28px;
+}
+
+.call-ended-info h2 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #f3f4f6;
+    margin: 0 0 8px 0;
+}
+
+.call-ended-info p {
+    font-size: 15px;
+    color: #9ca3af;
+    margin: 0;
+    line-height: 1.5;
+}
+
+
+.call-ended-btn {
+    width: 100%;
+    padding: 14px 24px;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: #3b82f6;
+    color: #ffffff;
+}
+
+.call-ended-btn:hover {
+    background-color: #2563eb;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.call-ended-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(59, 130, 246, 0.2);
+}
+
+
+@media (max-width: 480px) {
+    .call-ended-popup {
+        padding: 32px 24px;
+    }
+
+    .call-ended-icon {
+        width: 70px;
+        height: 70px;
+    }
+
+    .call-ended-icon svg {
+        width: 40px;
+        height: 40px;
+    }
+
+    .call-ended-info h2 {
+        font-size: 22px;
+    }
+
+    .call-ended-info p {
+        font-size: 14px;
+    }
+}

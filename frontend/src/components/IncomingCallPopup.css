@@ -1,0 +1,222 @@
+
+.incoming-call-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    backdrop-filter: blur(8px);
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+
+.incoming-call-popup {
+    background-color: #1a1a1a;
+    border-radius: 20px;
+    padding: 48px 40px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+    max-width: 400px;
+    width: 90%;
+    animation: slideUp 0.4s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+
+.incoming-call-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+
+.incoming-call-avatar {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin-bottom: 24px;
+}
+
+.incoming-call-avatar img,
+.incoming-call-avatar-fallback {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.incoming-call-avatar-fallback {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+
+.incoming-call-pulse {
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    right: -8px;
+    bottom: -8px;
+    border-radius: 50%;
+    border: 3px solid #3b82f6;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.1);
+        opacity: 0.5;
+    }
+}
+
+
+.incoming-call-info {
+    margin-bottom: 32px;
+}
+
+.incoming-call-info h2 {
+    font-size: 28px;
+    font-weight: bold;
+    color: #f3f4f6;
+    margin: 0 0 8px 0;
+}
+
+.incoming-call-info p {
+    font-size: 16px;
+    color: #9ca3af;
+    margin: 0;
+    animation: blink 1.5s ease-in-out infinite;
+}
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+
+.incoming-call-actions {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+}
+
+.incoming-call-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 20px;
+    border: none;
+    border-radius: 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.incoming-call-btn:active {
+    transform: scale(0.95);
+}
+
+
+.incoming-call-btn--decline {
+    background-color: #dc2626;
+    color: #ffffff;
+}
+
+.incoming-call-btn--decline:hover {
+    background-color: #b91c1c;
+    box-shadow: 0 8px 16px rgba(220, 38, 38, 0.3);
+}
+
+
+.incoming-call-btn--accept {
+    background-color: #22c55e;
+    color: #ffffff;
+}
+
+.incoming-call-btn--accept:hover {
+    background-color: #16a34a;
+    box-shadow: 0 8px 16px rgba(34, 197, 94, 0.3);
+}
+
+.incoming-call-btn span {
+    font-size: 14px;
+}
+
+
+@media (max-width: 480px) {
+    .incoming-call-popup {
+        padding: 32px 24px;
+    }
+
+    .incoming-call-avatar {
+        width: 100px;
+        height: 100px;
+    }
+
+    .incoming-call-avatar-fallback {
+        font-size: 40px;
+    }
+
+    .incoming-call-info h2 {
+        font-size: 24px;
+    }
+
+    .incoming-call-actions {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .incoming-call-btn {
+        flex-direction: row;
+        justify-content: center;
+        padding: 16px;
+    }
+}

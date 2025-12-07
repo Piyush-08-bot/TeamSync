@@ -1,38 +1,93 @@
-import React from 'react'
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import { useAuth } from './contexts/AuthContext'
-import LandingPage from './pages/LandingPage'
-import SignInPage from './pages/SignInPage'
-import SignUpPage from './pages/SignUpPage'
-import Dashboard from './pages/Dashboard'
+import React, { useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { useAuth } from './contexts/AuthContext';
+import { StreamProvider } from './contexts/StreamContext';
 
-// Protected route component
+
+import AuthPage from './pages/AuthPage';
+import Dashboard from './pages/Dashboard';
+import OnboardingPage from './pages/OnboardingPage';
+import VideoCallPage from './pages/VideoCallPage';
+
+
+import LoadingSpinner from './components/LoadingSpinner';
+
 const ProtectedRoute = ({ children }) => {
-  const { authUser, isLoading } = useAuth()
-  
+  const { authUser, isLoading } = useAuth();
+  const location = useLocation();
+
   if (isLoading) {
-    return <div className="loading">Loading...</div>
+    return <LoadingSpinner />;
   }
-  
-  return authUser ? children : <Navigate to="/sign-in" />
-}
+
+  if (!authUser) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  if (!authUser.isOnboarded && location.pathname !== '/onboarding') {
+    return <Navigate to="/onboarding" replace />;
+  }
+
+  return children;
+};
 
 const App = () => {
+  const { authUser, isLoading } = useAuth();
+
+  if (isLoading && !authUser) {
+    return <LoadingSpinner />;
+  }
+
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/sign-in" element={<SignInPage />} />
-        <Route path="/sign-up" element={<SignUpPage />} />
-        <Route path="/dashboard" element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        } />
-      </Routes>
-    </Router>
-  )
-}
+    <BrowserRouter>
+      <div className="app-container">
+        <StreamProvider>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/onboarding"
+              element={
+                <ProtectedRoute>
+                  <OnboardingPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/video"
+              element={
+                <ProtectedRoute>
+                  <VideoCallPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/video/:callType/:callId"
+              element={
+                <ProtectedRoute>
+                  <VideoCallPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/login"
+              element={!authUser ? <AuthPage /> : <Navigate to="/" />}
+            />
+            <Route
+              path="/signup"
+              element={!authUser ? <AuthPage /> : <Navigate to="/" />}
+            />
+          </Routes>
+        </StreamProvider>
+      </div>
+    </BrowserRouter>
+  );
+};
 
-export default App
-
+export default App;

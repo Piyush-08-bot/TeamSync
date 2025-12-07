@@ -2,187 +2,225 @@ import jwt from "jsonwebtoken";
 import { User } from "../models/user.model.js";
 import { connectDB } from "../config/db.js";
 
-// Generate JWT token
+import { ENV } from "../config/env.js";
+
 const generateToken = (userId) => {
-    console.log("=== Token Generation ===");
-    console.log("Input userId:", userId);
-    console.log("JWT_SECRET length:", process.env.JWT_SECRET?.length || 0);
-
-    if (!process.env.JWT_SECRET) {
-        const error = new Error("JWT_SECRET is not defined");
-        console.error("Token generation error:", error.message);
-        throw error;
+    if (!ENV.JWT_SECRET) {
+        console.error("CRITICAL ERROR: JWT_SECRET is missing in environment variables!");
+        throw new Error("JWT_SECRET is not configured");
     }
-
-    try {
-        const token = jwt.sign({ userId }, process.env.JWT_SECRET, {
-            expiresIn: "15d",
-        });
-        console.log("Token generated successfully");
-        return token;
-    } catch (error) {
-        console.error("Token generation failed:", error.message);
-        throw error;
-    }
+    return jwt.sign({ userId }, ENV.JWT_SECRET, { expiresIn: "15d" });
 };
 
-// Register user
 export const registerUser = async (req, res) => {
     try {
-        console.log("=== Register User Request ===");
-        console.log("Request body:", JSON.stringify(req.body, null, 2));
-
-        // Ensure database connection
         await connectDB();
-
         const { name, email, password } = req.body;
 
-        // Validate input
         if (!name || !email || !password) {
-            console.log("Missing required fields");
-            return res.status(400).json({ message: "Name, email, and password are required" });
+            return res.status(400).json({ message: "All fields are required" });
         }
 
-        // Check if user already exists
-        console.log("Checking if user exists with email:", email);
         const userExists = await User.findOne({ email });
-        console.log("User exists check result:", userExists ? "User found" : "User not found");
-
         if (userExists) {
-            console.log("User already exists");
-            return res.status(400).json({ message: "User already exists" });
+            return res.status(400).json({ message: "Email already registered" });
         }
 
-        // Create user
-        console.log("Creating new user with name:", name, "email:", email);
-        const user = await User.create({
-            name,
-            email,
-            password,
-        });
-        console.log("User created successfully with ID:", user._id);
-
-        // Generate token
-        console.log("Generating token for user:", user._id);
+        const user = await User.create({ name, email, password });
         const token = generateToken(user._id);
 
-        const response = {
+        res.status(201).json({
             _id: user._id,
             name: user.name,
             email: user.email,
+            bio: user.Bio,  
+            isOnboarded: user.isOnboarded,
             token,
-        };
-
-        console.log("Registration response:", JSON.stringify(response, null, 2));
-        res.status(201).json(response);
-    } catch (error) {
-        console.log("=== Registration Error ===");
-        console.error("Error in registerUser:", error);
-        console.error("Error details:", {
-            message: error.message,
-            name: error.name,
-            stack: error.stack
         });
+    } catch (error) {
+        console.error("Registration error:", error.message);
 
-        // Handle specific error types
         if (error.name === 'ValidationError') {
             const messages = Object.values(error.errors).map(err => err.message);
-            return res.status(400).json({ message: "Validation error", errors: messages });
+            return res.status(400).json({ message: "Validation failed", errors: messages });
         }
 
         if (error.name === 'MongoServerError' && error.code === 11000) {
-            return res.status(400).json({ message: "User already exists" });
+            return res.status(400).json({ message: "Email already exists" });
         }
 
-        // Handle database connection errors
         if (error.name === 'MongoServerSelectionError' || error.message.includes('buffering timed out')) {
             return res.status(503).json({
-                message: "Service temporarily unavailable. Please try again later.",
-                error: "Database connection timeout"
+                message: "Database temporarily unavailable. Please try again.",
             });
         }
 
         res.status(500).json({
-            message: "Internal server error",
+            message: "Registration failed",
             error: error.message,
-            // Remove stack in production
-            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
         });
     }
 };
 
-// Login user
+import fs from 'fs';
+import path from 'path';
+
 export const loginUser = async (req, res) => {
     try {
-        console.log("=== Login User Request ===");
-        console.log("Request body:", JSON.stringify(req.body, null, 2));
-
-        // Ensure database connection
         await connectDB();
-
         const { email, password } = req.body;
 
-        // Validate input
         if (!email || !password) {
-            console.log("Missing email or password");
             return res.status(400).json({ message: "Email and password are required" });
         }
 
-        // Find user by email
-        console.log("Finding user by email:", email);
         const user = await User.findOne({ email }).select("+password");
-        console.log("User find result:", user ? "User found" : "User not found");
-
         if (!user) {
-            console.log("Invalid credentials - user not found");
-            return res.status(400).json({ message: "Invalid credentials" });
+            return res.status(400).json({ message: "Invalid email or password" });
         }
 
-        // Check password
-        console.log("Checking password for user:", user.email);
         const isPasswordCorrect = await user.comparePassword(password);
-        console.log("Password check result:", isPasswordCorrect ? "Correct" : "Incorrect");
-
         if (!isPasswordCorrect) {
-            console.log("Invalid credentials - incorrect password");
-            return res.status(400).json({ message: "Invalid credentials" });
+            return res.status(400).json({ message: "Invalid email or password" });
         }
 
-        // Generate token
-        console.log("Generating token for user:", user._id);
         const token = generateToken(user._id);
 
-        const response = {
+        res.status(200).json({
             _id: user._id,
             name: user.name,
             email: user.email,
+            bio: user.Bio,
+            isOnboarded: user.isOnboarded,
             token,
-        };
-
-        console.log("Login response:", JSON.stringify(response, null, 2));
-        res.status(200).json(response);
-    } catch (error) {
-        console.log("=== Login Error ===");
-        console.error("Error in loginUser:", error);
-        console.error("Error details:", {
-            message: error.message,
-            name: error.name,
-            stack: error.stack
         });
+    } catch (error) {
+        console.error("Login error:", error.message);
 
-        // Handle database connection errors
+        
+        try {
+            const logPath = path.resolve(process.cwd(), 'error.log');
+            const timestamp = new Date().toISOString();
+            const logMessage = `[${timestamp}] Login Error: ${error.message}\nStack: ${error.stack}\n\n`;
+            fs.appendFileSync(logPath, logMessage);
+        } catch (logErr) {
+            console.error("Failed to write to error log:", logErr);
+        }
+
         if (error.name === 'MongoServerSelectionError' || error.message.includes('buffering timed out')) {
             return res.status(503).json({
-                message: "Service temporarily unavailable. Please try again later.",
-                error: "Database connection timeout"
+                message: "Database temporarily unavailable. Please try again.",
             });
         }
 
         res.status(500).json({
-            message: "Internal server error",
+            message: "Login failed",
             error: error.message,
-            // Remove stack in production
-            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
+    }
+};
+
+export const getCurrentUser = async (req, res) => {
+    try {
+        await connectDB();
+
+        
+        const user = await User.findById(req.user._id).select("-password");
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.status(200).json({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            bio: user.Bio,  
+            isOnboarded: user.isOnboarded,
+        });
+    } catch (error) {
+        console.error("Get current user error:", error.message);
+        res.status(500).json({
+            message: "Failed to get user data",
+            error: error.message,
+        });
+    }
+};
+
+
+export const updateUserProfile = async (req, res) => {
+    try {
+        await connectDB();
+
+        const { name, bio, profilePic } = req.body;
+        const userId = req.user._id;
+
+        
+        if (!name) {
+            return res.status(400).json({ message: "Name is required" });
+        }
+
+        
+        const user = await User.findByIdAndUpdate(
+            userId,
+            {
+                name,
+                Bio: bio,  
+                profilePic,
+                isOnboarded: true
+            },
+            { new: true, runValidators: true }
+        ).select("-password");
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.status(200).json({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            bio: user.Bio,  
+            profilePic: user.profilePic,
+            isOnboarded: user.isOnboarded,
+        });
+    } catch (error) {
+        console.error("Update profile error:", error.message);
+        console.error("Error stack:", error.stack);
+
+        if (error.name === 'ValidationError') {
+            const messages = Object.values(error.errors).map(err => err.message);
+            return res.status(400).json({ message: "Validation failed", errors: messages });
+        }
+
+        if (error.name === 'CastError') {
+            return res.status(400).json({ message: "Invalid user ID format" });
+        }
+
+        res.status(500).json({
+            message: "Failed to update profile",
+            error: error.message,
+        });
+    }
+};
+
+export const deleteUser = async (req, res) => {
+    try {
+        await connectDB();
+        const userId = req.user._id;
+
+        const deletedUser = await User.findByIdAndDelete(userId);
+
+        if (!deletedUser) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.status(200).json({ message: "User deleted successfully" });
+    } catch (error) {
+        console.error("Delete user error:", error.message);
+        res.status(500).json({
+            message: "Failed to delete user",
+            error: error.message,
         });
     }
 };
