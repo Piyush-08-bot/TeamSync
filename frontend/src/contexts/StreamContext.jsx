@@ -92,24 +92,68 @@ export const StreamProvider = ({ children }) => {
         
         console.log('StreamContext: Fetching chat token...');
         const chatData = await getStreamChatToken();
-        console.log('StreamContext: Chat token received');
+        console.log('StreamContext: Chat token received', chatData);
+        
+        // Add validation for required fields
+        if (!chatData.apiKey) {
+          throw new Error('API Key is missing from chat token response. Please check your backend configuration.');
+        }
+        if (!chatData.token) {
+          throw new Error('Token is missing from chat token response');
+        }
+        if (!chatData.userId) {
+          throw new Error('User ID is missing from chat token response');
+        }
+        
+        // Validate that the API key is not empty
+        if (typeof chatData.apiKey !== 'string' || chatData.apiKey.trim() === '') {
+          throw new Error('Invalid API Key received from backend. API Key must be a non-empty string.');
+        }
 
-        const newChatClient = StreamChat.getInstance(chatData.apiKey);
+        // Initialize Stream chat client with additional options for better error handling
+        // Using the constructor approach instead of getInstance for better control
+        const newChatClient = new StreamChat(chatData.apiKey, {
+          timeout: 10000, // Increase timeout for slow connections
+          baseURL: 'https://chat.stream-io-api.com' // Explicitly set the base URL
+        });
 
         
         if (newChatClient.userID && newChatClient.userID === chatData.userId) {
           console.log('StreamContext: Chat client already connected to this user');
           currentChatClient = newChatClient;
         } else {
-          await newChatClient.connectUser(
-            {
-              id: chatData.userId,
-              name: authUser.name || `User ${chatData.userId}`,
-              image: authUser.image || `https://getstream.io/random_svg/?id=${chatData.userId}&name=${authUser.name || 'User'}`
-            },
-            chatData.token
-          );
-          currentChatClient = newChatClient;
+          try {
+            // Use additional options for the connection
+            await newChatClient.connectUser(
+              {
+                id: chatData.userId,
+                name: authUser.name || `User ${chatData.userId}`,
+                image: authUser.image || `https://getstream.io/random_svg/?id=${chatData.userId}&name=${authUser.name || 'User'}`
+              },
+              chatData.token,
+              { // Additional connection options
+                timeout: 10000,
+                enableWSFallback: true // Enable WebSocket fallback
+              }
+            );
+            currentChatClient = newChatClient;
+          } catch (connectError) {
+            console.error('StreamContext: Error connecting user to chat:', connectError);
+            // Log additional debugging information
+            console.error('StreamContext: Debug info:', {
+              apiKey: chatData.apiKey,
+              userId: chatData.userId,
+              tokenLength: chatData.token?.length,
+              tokenType: typeof chatData.token
+            });
+            
+            // Check if this is a WebSocket error
+            if (connectError.message && connectError.message.includes('api_key not found')) {
+              console.error('StreamContext: This appears to be a WebSocket API key error. This usually means the API key is invalid or not properly configured.');
+            }
+            
+            throw new Error(`Failed to connect to chat: ${connectError.message}`);
+          }
         }
 
         if (isMounted) {
@@ -123,7 +167,23 @@ export const StreamProvider = ({ children }) => {
         try {
           console.log('StreamContext: Fetching video token...');
           const videoData = await getStreamVideoToken();
-          console.log('StreamContext: Video token received');
+          console.log('StreamContext: Video token received', videoData);
+          
+          // Add validation for required fields in video data
+          if (!videoData.apiKey) {
+            throw new Error('API Key is missing from video token response. Please check your backend configuration.');
+          }
+          if (!videoData.token) {
+            throw new Error('Token is missing from video token response');
+          }
+          if (!videoData.userId) {
+            throw new Error('User ID is missing from video token response');
+          }
+          
+          // Validate that the API key is not empty
+          if (typeof videoData.apiKey !== 'string' || videoData.apiKey.trim() === '') {
+            throw new Error('Invalid API Key received from backend for video. API Key must be a non-empty string.');
+          }
 
           const newVideoClient = new StreamVideoClient({
             apiKey: videoData.apiKey,
@@ -150,6 +210,11 @@ export const StreamProvider = ({ children }) => {
           }
         } catch (videoErr) {
           console.warn('StreamContext: Video client initialization failed (non-critical):', videoErr);
+          // Log additional debugging information for video client
+          console.warn('StreamContext: Video debug info:', {
+            message: videoErr.message,
+            stack: videoErr.stack
+          });
           
           if (isMounted) {
             setVideoClient(null);
@@ -184,8 +249,22 @@ export const StreamProvider = ({ children }) => {
     return () => {
       isMounted = false;
       
+      // Clean up Stream clients when component unmounts
+      if (chatClientRef.current) {
+        try {
+          chatClientRef.current.disconnectUser();
+        } catch (err) {
+          console.warn('StreamContext: Error disconnecting chat client on cleanup:', err);
+        }
+      }
       
-      
+      if (videoClientRef.current) {
+        try {
+          videoClientRef.current.disconnectUser();
+        } catch (err) {
+          console.warn('StreamContext: Error disconnecting video client on cleanup:', err);
+        }
+      }
     };
   }, [authUser, authLoading]);
 
