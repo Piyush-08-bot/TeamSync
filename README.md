@@ -1,12 +1,15 @@
->>>>>>> f039418310695a73ba54394d74519992caeab24d
+> > > > > > > f039418310695a73ba54394d74519992caeab24d
+
 # Capstone Project - JWT Authentication Implementation
 
 ## 🌐 Hosted Links
 
 ### 🖥️ Frontend (Deployed on Vercel)
+
 🔗 https://team-sync-beryl.vercel.app/
 
 ### ⚙️ Backend (Deployed on Vercel)
+
 🔗 https://team-sync-backend.vercel.app/
 
 ## Backend
@@ -89,7 +92,7 @@
 ## API Endpoints
 
 ### Authentication
-
+![1765134150456](image/README/1765134150456.png)
 - `POST /api/auth/register` - Register a new user
 - `POST /api/auth/login` - Login user
 
@@ -123,6 +126,5 @@ If you encounter MongoDB connection timeouts on Vercel:
 1. Verify that your `MONGO_URI` environment variable is correctly set in Vercel
 2. Check that your MongoDB Atlas cluster allows connections from Vercel's IP addresses
 3. Use the `/health` endpoint to check the database connection status
-4. Ensure your JWT_SECRET is set and is sufficiently complex
-=======
->>>>>>> f039418310695a73ba54394d74519992caeab24d
+4. # Ensur![1765130771109](image/README/1765130771109.png)WT_SECRET is set and is sufficiently complex
+   > > > > > > > f039418310695a73ba54394d74519992caeab24d

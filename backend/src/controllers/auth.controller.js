@@ -33,7 +33,7 @@ export const registerUser = async (req, res) => {
             _id: user._id,
             name: user.name,
             email: user.email,
-            bio: user.Bio,  
+            bio: user.Bio,
             isOnboarded: user.isOnboarded,
             token,
         });
@@ -67,7 +67,7 @@ export const loginUser = async (req, res) => {
             _id: user._id,
             name: user.name,
             email: user.email,
-            bio: user.Bio,  
+            bio: user.Bio,
             isOnboarded: user.isOnboarded,
             token,
         });
@@ -93,7 +93,7 @@ export const getCurrentUser = async (req, res) => {
             _id: user._id,
             name: user.name,
             email: user.email,
-            bio: user.Bio,  
+            bio: user.Bio,
             profilePic: user.profilePic,
             isOnboarded: user.isOnboarded,
         });
@@ -111,7 +111,7 @@ export const updateUserProfile = async (req, res) => {
         console.log('=== updateUserProfile called ===');
         console.log('Request body:', req.body);
         console.log('User ID:', req.user._id);
-        
+
         await connectDB();
         const { name, bio, profilePic } = req.body;
         const userId = req.user._id;
@@ -123,7 +123,7 @@ export const updateUserProfile = async (req, res) => {
 
         // Update fields if provided
         if (name !== undefined) user.name = name;
-        if (bio !== undefined) user.Bio = bio;  
+        if (bio !== undefined) user.Bio = bio;
         if (profilePic !== undefined) user.profilePic = profilePic;
 
         // Mark user as onboarded when they update their profile
@@ -136,7 +136,7 @@ export const updateUserProfile = async (req, res) => {
             _id: updatedUser._id,
             name: updatedUser.name,
             email: updatedUser.email,
-            bio: updatedUser.Bio,  
+            bio: updatedUser.Bio,
             profilePic: updatedUser.profilePic,
             isOnboarded: updatedUser.isOnboarded,
         });

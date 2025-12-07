@@ -22,7 +22,7 @@ const initializeClients = () => {
     console.log('🔄 Initializing Stream clients...');
     console.log('STREAM_API_KEY:', ENV.STREAM_API_KEY ? 'SET' : 'MISSING');
     console.log('STREAM_API_SECRET:', ENV.STREAM_API_SECRET ? 'SET' : 'MISSING');
-    
+
     if (!validateEnv()) {
       console.log('❌ Stream validation failed');
       return false;
