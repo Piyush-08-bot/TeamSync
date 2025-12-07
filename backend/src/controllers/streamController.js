@@ -10,6 +10,15 @@ export const getChatToken = async (req, res) => {
         console.log('ENV.STREAM_API_KEY:', ENV.STREAM_API_KEY ? 'SET' : 'MISSING');
         console.log('ENV.STREAM_API_SECRET:', ENV.STREAM_API_SECRET ? 'SET' : 'MISSING');
 
+        if (!isInitialized) {
+            console.log('❌ Stream services not initialized');
+            return res.status(501).json({
+                success: false,
+                message: "Stream services not configured",
+                details: "Stream clients failed to initialize. Check environment variables."
+            });
+        }
+
         const chatClient = getChatServer();
         console.log('Chat client:', !!chatClient);
         console.log('Chat client key:', chatClient?.key);
@@ -34,6 +43,10 @@ export const getChatToken = async (req, res) => {
         const token = chatClient.createToken(userId);
         console.log('Token generated successfully');
 
+        // Skip upsertUser for now to test if token generation works
+        console.log('Skipping upsertUser for testing purposes');
+        
+        /*
         console.log('Upserting user:', userId);
         console.log('User data:', {
             id: userId,
@@ -68,6 +81,7 @@ export const getChatToken = async (req, res) => {
                 await new Promise(resolve => setTimeout(resolve, 1000 * attempts));
             }
         }
+        */
 
         res.status(200).json({
             success: true,
