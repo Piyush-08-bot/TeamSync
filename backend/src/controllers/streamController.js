@@ -4,18 +4,17 @@ import jwt from 'jsonwebtoken';
 
 export const getChatToken = async (req, res) => {
     try {
-        console.log('=== getChatToken called ===');
+        console.log('=== MANUAL JWT TOKEN GENERATION STARTED ===');
         console.log('User:', req.user?._id);
-        console.log('isInitialized:', isInitialized);
         console.log('ENV.STREAM_API_KEY:', ENV.STREAM_API_KEY ? 'SET' : 'MISSING');
         console.log('ENV.STREAM_API_SECRET:', ENV.STREAM_API_SECRET ? 'SET' : 'MISSING');
 
         const userId = req.user._id.toString();
         console.log('Generating token for user:', userId);
-        console.log('User details:', req.user.name, req.user.image);
 
         // Validate that we have the required credentials
         if (!ENV.STREAM_API_KEY || !ENV.STREAM_API_SECRET) {
+            console.log('❌ Missing Stream API credentials');
             throw new Error('Missing Stream API credentials');
         }
 
@@ -33,9 +32,10 @@ export const getChatToken = async (req, res) => {
                 expiresIn: '24h'
             }
         );
-        console.log('Token generated successfully');
+        console.log('✅ Token generated successfully');
 
-        res.status(200).json({
+        console.log('=== SENDING RESPONSE ===');
+        return res.status(200).json({
             success: true,
             token,
             userId,
@@ -43,7 +43,7 @@ export const getChatToken = async (req, res) => {
         });
 
     } catch (error) {
-        console.error("Error generating Chat Token:", error.message);
+        console.error("❌ Error generating Chat Token:", error.message);
         console.error("Error stack:", error.stack);
         console.error("Error code:", error.code);
         console.error("Error response:", error.response);
@@ -56,7 +56,8 @@ export const getChatToken = async (req, res) => {
             errorMessage += ` (Error code: ${error.code})`;
         }
         
-        res.status(500).json({
+        console.log('=== SENDING ERROR RESPONSE ===');
+        return res.status(500).json({
             success: false,
             message: errorMessage,
             error: error.message,
