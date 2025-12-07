@@ -74,6 +74,8 @@ connectDB().then(() => {
   console.log("  - GET /api/chat/test");
   console.log("  - GET /api/stream/chat/token");
   console.log("  - GET /api/stream/video/token");
+  console.log("  - GET /api/stream/test-new");  // Add this line
+  console.log("  - GET /api/stream/echo");     // Add this line
   console.log("  - POST /api/stream/chat/channel");
   console.log("  - POST /api/stream/chat/group");
   console.log("  - POST /api/stream/video/call");
@@ -85,25 +87,30 @@ connectDB().then(() => {
   // Catch-all for API routes that don't exist
   app.use((req, res, next) => {
     if (req.path.startsWith('/api/')) {
+      // Log available routes for debugging
+      const availableRoutes = [
+        'POST /api/auth/register',
+        'POST /api/auth/login',
+        'GET /api/auth/me',
+        'PUT /api/auth/profile', 
+        'DELETE /api/auth/profile',
+        'GET /api/chat/user/search?userId=...&email=...',
+        'GET /api/chat/test',
+        'GET /api/stream/chat/token',
+        'GET /api/stream/video/token',
+        'GET /api/stream/test-new',
+        'GET /api/stream/echo',
+        'POST /api/stream/chat/channel',
+        'POST /api/stream/chat/group',
+        'POST /api/stream/video/call'
+      ];
       console.log(`❌ 404 - Route not found: ${req.method} ${req.path}`);
       return res.status(404).json({
         error: 'Route not found',
         method: req.method,
         path: req.path,
         message: `The route ${req.method} ${req.path} does not exist`,
-        availableRoutes: [
-          'POST /api/auth/register',
-          'POST /api/auth/login',
-          'GET /api/auth/me',
-          'PUT /api/auth/profile',
-          'DELETE /api/auth/profile',
-          'GET /api/chat/user/search?userId=...&email=...',
-          'GET /api/chat/test',
-          'GET /api/stream/chat/token',
-          'GET /api/stream/video/token',
-          'POST /api/stream/chat/channel',
-          'POST /api/stream/video/call'
-        ]
+        availableRoutes
       });
     }
     next();
