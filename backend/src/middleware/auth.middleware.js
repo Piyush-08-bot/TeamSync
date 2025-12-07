@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import { User } from "../models/user.model.js";
 import { connectDB } from "../config/db.js";
+import { ENV } from "../config/env.js";
 
 export const protectRoute = async (req, res, next) => {
     try {
@@ -12,7 +13,7 @@ export const protectRoute = async (req, res, next) => {
         }
 
         const token = authHeader.split(" ")[1];
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, ENV.JWT_SECRET);
 
         const user = await User.findById(decoded.userId).select("-password");
         if (!user) {
