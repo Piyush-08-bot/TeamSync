@@ -21,6 +21,7 @@ export const getChatToken = async (req, res) => {
 
         const chatClient = getChatServer();
         console.log('Chat client:', !!chatClient);
+        console.log('Chat client key:', chatClient?.key);
 
         if (!chatClient) {
             console.log('❌ Stream chat client not initialized');
@@ -37,17 +38,45 @@ export const getChatToken = async (req, res) => {
         }
 
         console.log('Creating token for user:', userId);
+        console.log('Chat client API key:', chatClient.key);
+        console.log('Chat client secret exists:', !!chatClient.secret);
         const token = chatClient.createToken(userId);
         console.log('Token generated successfully');
 
         console.log('Upserting user:', userId);
-        await chatClient.upsertUser({
+        console.log('User data:', {
             id: userId,
             name: req.user.name,
             image: req.user.image || '',
             role: 'user'
         });
-        console.log('User upserted successfully');
+        
+        // Add retry mechanism for upsertUser
+        let upsertSuccess = false;
+        let attempts = 0;
+        const maxAttempts = 3;
+        
+        while (!upsertSuccess && attempts < maxAttempts) {
+            try {
+                attempts++;
+                console.log(`Attempt ${attempts} to upsert user...`);
+                await chatClient.upsertUser({
+                    id: userId,
+                    name: req.user.name,
+                    image: req.user.image || '',
+                    role: 'user'
+                });
+                upsertSuccess = true;
+                console.log('User upserted successfully');
+            } catch (upsertError) {
+                console.error(`Attempt ${attempts} failed:`, upsertError.message);
+                if (attempts >= maxAttempts) {
+                    throw upsertError;
+                }
+                // Wait a bit before retrying
+                await new Promise(resolve => setTimeout(resolve, 1000 * attempts));
+            }
+        }
 
         res.status(200).json({
             success: true,
@@ -59,10 +88,22 @@ export const getChatToken = async (req, res) => {
     } catch (error) {
         console.error("Error generating Chat Token:", error.message);
         console.error("Error stack:", error.stack);
+        console.error("Error code:", error.code);
+        console.error("Error response:", error.response);
+        
+        // Provide more specific error messages
+        let errorMessage = "Failed to generate chat token";
+        if (error.message.includes("api_key not found")) {
+            errorMessage = "Stream API key configuration error - please check backend environment variables";
+        } else if (error.code) {
+            errorMessage += ` (Error code: ${error.code})`;
+        }
+        
         res.status(500).json({
             success: false,
-            message: "Failed to generate chat token",
+            message: errorMessage,
             error: error.message,
+            errorCode: error.code,
             stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
         });
     }

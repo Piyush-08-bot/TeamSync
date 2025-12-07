@@ -30,3 +30,7 @@ console.log(`- MONGO_URI: ${ENV.MONGO_URI ? 'Set' : 'Missing'}`);
 console.log(`- JWT_SECRET: ${ENV.JWT_SECRET ? 'Set' : 'Missing'}`);
 console.log(`- CLIENT_URL: ${ENV.CLIENT_URL}`);
 console.log(`- NODE_ENV: ${ENV.NODE_ENV}`);
+console.log(`- STREAM_API_KEY: ${ENV.STREAM_API_KEY ? 'Set' : 'Missing'}`);
+console.log(`- STREAM_API_KEY_VALUE: ${ENV.STREAM_API_KEY}`);
+console.log(`- STREAM_API_SECRET: ${ENV.STREAM_API_SECRET ? 'Set' : 'Missing'}`);
+console.log(`- STREAM_API_SECRET_LENGTH: ${ENV.STREAM_API_SECRET ? ENV.STREAM_API_SECRET.length : 'N/A'}`);

@@ -23,7 +23,8 @@ const initializeClients = () => {
     console.log('🔄 Initializing Stream clients...');
     console.log('STREAM_API_KEY:', ENV.STREAM_API_KEY ? 'SET' : 'MISSING');
     console.log('STREAM_API_SECRET:', ENV.STREAM_API_SECRET ? 'SET' : 'MISSING');
-
+    
+    // Validate environment variables first
     if (!validateEnv()) {
       console.log('❌ Stream validation failed');
       isInitialized = false;
@@ -41,9 +42,14 @@ const initializeClients = () => {
     }
 
     console.log('🔄 Creating StreamChat client...');
-    chatServer = StreamChat.getInstance(ENV.STREAM_API_KEY, ENV.STREAM_API_SECRET);
-    console.log('✅ StreamChat client created');
-
+    console.log('Using API Key:', ENV.STREAM_API_KEY);
+    console.log('API Key length:', ENV.STREAM_API_KEY?.length);
+    console.log('Secret length:', ENV.STREAM_API_SECRET?.length);
+    
+    // Create new client instance with explicit API key and secret
+    chatServer = new StreamChat(ENV.STREAM_API_KEY, ENV.STREAM_API_SECRET);
+    console.log('✅ StreamChat client created with API key:', chatServer.key);
+    
     if (videoServer) {
       console.log('🔄 Disposing existing StreamVideoClient...');
       try {
@@ -80,6 +86,7 @@ console.log('🔄 initializeClients result:', result);
 export const getChatServer = () => {
   console.log('🔄 getChatServer called, isInitialized:', isInitialized);
   console.log('🔄 chatServer exists:', !!chatServer);
+  console.log('🔄 chatServer key:', chatServer?.key);
   if (!isInitialized || !chatServer) {
     console.log('🔄 Reinitializing Stream clients...');
     initializeClients();
