@@ -13,9 +13,9 @@ const app = express();
 // Adding multiple possible frontend domains to handle different deployment scenarios
 const corsOptions = {
   origin: [
-    ENV.CLIENT_URL, 
-    'http://localhost:5176', 
-    'http://localhost:5173', 
+    ENV.CLIENT_URL,
+    'http://localhost:5176',
+    'http://localhost:5173',
     'https://team-sync-beryl.vercel.app',
     'https://team-sync-backend-orcin.vercel.app'  // Add the actual backend domain
   ],
@@ -29,8 +29,8 @@ const corsOptions = {
 app.use(express.json({ limit: '10mb' }));
 app.use(cors(corsOptions));
 
-// Handle preflight requests for all routes
-app.options('*', cors(corsOptions));
+// Handle preflight requests for all routes - Fixed for Express v5
+app.options(/.*/, cors(corsOptions)); // Changed from '*' to /.*/
 
 // Log all incoming requests for debugging
 app.use((req, res, next) => {
