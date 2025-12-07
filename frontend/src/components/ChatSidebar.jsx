@@ -206,27 +206,38 @@ const CustomChannelList = ({ loading, error, channels, setActiveChannel, activeC
         
         const handleChannelCreated = () => {
             console.log('Channel created event - refreshing list');
-            setTimeout(() => loadChannels(), 500);
+            // Use a shorter timeout and force refresh
+            setTimeout(() => loadChannels(), 100);
         };
 
         const handleChannelUpdated = () => {
             console.log('Channel updated event - refreshing list');
-            setTimeout(() => loadChannels(), 300);
+            setTimeout(() => loadChannels(), 100);
         };
 
         const handleMessageNew = () => {
             console.log('New message event - refreshing list');
-            setTimeout(() => loadChannels(), 300);
+            setTimeout(() => loadChannels(), 100);
+        };
+
+        // Also listen for connection events
+        const handleConnectionChanged = () => {
+            console.log('Connection state changed - refreshing channels');
+            setTimeout(() => loadChannels(), 200);
         };
 
         chatClient.on('channel.created', handleChannelCreated);
         chatClient.on('channel.updated', handleChannelUpdated);
         chatClient.on('message.new', handleMessageNew);
+        chatClient.on('connection.changed', handleConnectionChanged);
+        chatClient.on('connection.recovered', handleConnectionChanged);
 
         return () => {
             chatClient.off('channel.created', handleChannelCreated);
             chatClient.off('channel.updated', handleChannelUpdated);
             chatClient.off('message.new', handleMessageNew);
+            chatClient.off('connection.changed', handleConnectionChanged);
+            chatClient.off('connection.recovered', handleConnectionChanged);
         };
     }, [chatClient, chatClient?.userID, refreshKey]);
 
@@ -513,7 +524,7 @@ const ChatSidebar = ({ activeChannel, setActiveChannel, onAddUser, onAddGroup, c
                         <button onClick={() => { navigate('/onboarding'); setShowProfileMenu(false); }}>
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <circle cx="12" cy="12" r="3" />
-                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
                             </svg>
                             Settings
                         </button>

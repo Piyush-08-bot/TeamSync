@@ -66,7 +66,10 @@ const VideoCallModal = ({ callType, callId, onClose }) => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        if (!callType || !callId || !videoClient) {
+        // Default to 'default' call type if not provided
+        const effectiveCallType = callType || 'default';
+        
+        if (!effectiveCallType || !callId || !videoClient) {
             return;
         }
 
@@ -75,16 +78,14 @@ const VideoCallModal = ({ callType, callId, onClose }) => {
             setError(null);
 
             try {
-                const newCall = videoClient.call(callType, callId);
+                const newCall = videoClient.call(effectiveCallType, callId);
 
                 
-                
-                
+                // Try to join the call first
                 try {
-                    await newCall.join({ create: false });
+                    await newCall.join({ create: true });
                 } catch (joinError) {
-                    
-                    
+                    // If joining fails, try to get or create the call
                     console.log('Join failed, trying to get or create call:', joinError);
                     await newCall.getOrCreate();
                     await newCall.join();

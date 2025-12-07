@@ -50,9 +50,20 @@ const AddUserModal = ({ onClose, onChannelCreated }) => {
             
             if (chatClient) {
                 const channelId = result.channelId;
-                const channel = chatClient.channel('messaging', channelId);
-                await channel.watch();
+                // Instead of just watching, let's query for the channel to ensure it exists
+                const channels = await chatClient.queryChannels({
+                    id: channelId,
+                    type: 'messaging'
+                });
                 
+                let channel;
+                if (channels.length > 0) {
+                    channel = channels[0];
+                } else {
+                    // If channel doesn't exist in the query, create it
+                    channel = chatClient.channel('messaging', channelId);
+                    await channel.watch();
+                }
                 
                 if (onChannelCreated) {
                     onChannelCreated(channel);
@@ -76,8 +87,12 @@ const AddUserModal = ({ onClose, onChannelCreated }) => {
             toast.success('Video call created!');
             onClose();
             
+            // Dispatch event with proper call type
             window.dispatchEvent(new CustomEvent('startVideoCall', { 
-                detail: { callId: result.callId } 
+                detail: { 
+                    callId: result.callId,
+                    callType: 'default'  // Specify the call type
+                } 
             }));
         } catch (error) {
             toast.error(error.message || 'Failed to create video call');

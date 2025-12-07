@@ -228,9 +228,29 @@ const StreamChatComponent = () => {
         };
     }, [videoClient, isReady, chatClient?.userID, showIncomingCall]);
 
+    // Add event listener for startVideoCall custom event
+    useEffect(() => {
+        const handleStartVideoCall = (event) => {
+            const { callId, callType } = event.detail;
+            if (callId) {
+                // Use the provided callType or default to 'default'
+                const effectiveCallType = callType || 'default';
+                handleShowVideoCall(effectiveCallType, callId);
+            }
+        };
+
+        window.addEventListener('startVideoCall', handleStartVideoCall);
+        
+        return () => {
+            window.removeEventListener('startVideoCall', handleStartVideoCall);
+        };
+    }, []);
+
     
     const handleShowVideoCall = (callType, callId) => {
-        setVideoCallInfo({ callType, callId });
+        // Default to 'default' call type for video calls
+        const effectiveCallType = callType || 'default';
+        setVideoCallInfo({ callType: effectiveCallType, callId });
         setShowVideoCall(true);
     };
 
@@ -284,11 +304,13 @@ const StreamChatComponent = () => {
         setShowAddUser(false);
         setShowAddGroup(false);
         
+        // Force refresh the channel list
         setChannelListKey(prev => prev + 1);
         
+        // Add an additional refresh after a short delay to ensure the UI updates
         setTimeout(() => {
             setChannelListKey(prev => prev + 1);
-        }, 500);
+        }, 300);
     };
 
     

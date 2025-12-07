@@ -101,6 +101,18 @@ export const createDirectMessageChannel = async (req, res) => {
         // Create channel ID
         const channelId = [currentUserId, targetUserId].sort().join('-');
 
+        // Create Stream chat client
+        const serverClient = StreamChat.getInstance(ENV.STREAM_API_KEY, ENV.STREAM_API_SECRET);
+        
+        // Actually create the channel in Stream
+        const channel = serverClient.channel('messaging', channelId, {
+            members: [currentUserId, targetUserId],
+            created_by_id: currentUserId
+        });
+        
+        // Create the channel in Stream
+        await channel.create();
+
         res.status(200).json({
             success: true,
             channelId: channelId,
@@ -190,7 +202,8 @@ export const createVideoCall = async (req, res) => {
             });
         }
 
-        const callId = `direct-${[currentUserId, targetUserId].sort().join('-')}`;
+        // Create a more unique call ID
+        const callId = `direct-${Date.now()}-${[currentUserId, targetUserId].sort().join('-')}`;
 
         // Create Stream chat client
         const serverClient = StreamChat.getInstance(ENV.STREAM_API_KEY, ENV.STREAM_API_SECRET);
