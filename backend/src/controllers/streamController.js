@@ -82,7 +82,11 @@ export const createDirectMessageChannel = async (req, res) => {
             console.error("Stream services not configured - Missing API key or secret");
             return res.status(501).json({
                 success: false,
-                message: "Stream services not configured"
+                message: "Stream services not configured - Missing API key or secret",
+                details: {
+                    hasApiKey: !!ENV.STREAM_API_KEY,
+                    hasApiSecret: !!ENV.STREAM_API_SECRET
+                }
             });
         }
 
@@ -95,17 +99,25 @@ export const createDirectMessageChannel = async (req, res) => {
 
         // Test if Stream credentials are valid
         try {
+            console.log("Attempting to validate Stream credentials...");
             const serverClient = StreamChat.getInstance(ENV.STREAM_API_KEY, ENV.STREAM_API_SECRET);
             // Test the connection by getting the app settings
-            await serverClient.getAppSettings();
-            console.log("Stream credentials validated successfully");
+            const appSettings = await serverClient.getAppSettings();
+            console.log("Stream credentials validated successfully", {
+                app: appSettings.app?.name,
+                organization: appSettings.app?.organization_name
+            });
         } catch (credentialError) {
             console.error("Stream credentials validation failed:", credentialError.message);
             console.error("Credential error stack:", credentialError.stack);
             return res.status(500).json({
                 success: false,
-                message: "Invalid Stream credentials",
-                error: credentialError.message
+                message: "Invalid Stream credentials - Please check your STREAM_API_KEY and STREAM_API_SECRET",
+                error: credentialError.message,
+                details: {
+                    hasApiKey: !!ENV.STREAM_API_KEY,
+                    hasApiSecret: !!ENV.STREAM_API_SECRET
+                }
             });
         }
 
@@ -163,7 +175,8 @@ export const createDirectMessageChannel = async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Failed to create direct message channel',
-            error: error.message
+            error: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
         });
     }
 };
