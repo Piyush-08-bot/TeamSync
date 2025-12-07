@@ -29,15 +29,18 @@ export const getChatToken = async (req, res) => {
 
         const userId = req.user._id.toString();
         console.log('Generating token for user:', userId);
+        console.log('User details:', req.user.name, req.user.image);
 
         // Validate that we have the required credentials
         if (!ENV.STREAM_API_KEY || !ENV.STREAM_API_SECRET) {
             throw new Error('Missing Stream API credentials');
         }
 
+        console.log('Creating token for user:', userId);
         const token = chatClient.createToken(userId);
         console.log('Token generated successfully');
 
+        console.log('Upserting user:', userId);
         await chatClient.upsertUser({
             id: userId,
             name: req.user.name,
@@ -92,6 +95,7 @@ export const getVideoToken = async (req, res) => {
 
         const userId = req.user._id.toString();
         console.log('Generating video token for user:', userId);
+        console.log('User details:', req.user.name, req.user.image);
 
         // Validate that we have the required credentials
         if (!ENV.STREAM_API_KEY || !ENV.STREAM_API_SECRET) {
@@ -99,6 +103,7 @@ export const getVideoToken = async (req, res) => {
         }
 
         // Generate JWT token for video client
+        console.log('Signing JWT token for user:', userId);
         const token = jwt.sign(
             {
                 user_id: userId,

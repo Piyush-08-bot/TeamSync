@@ -10,6 +10,7 @@ const validateEnv = () => {
     console.warn(`⚠️  Missing Stream credentials: ${missing.join(', ')}. Stream features will be disabled.`);
     return false;
   }
+  console.log('✅ All Stream credentials are present');
   return true;
 };
 
@@ -78,6 +79,7 @@ console.log('🔄 initializeClients result:', result);
 
 export const getChatServer = () => {
   console.log('🔄 getChatServer called, isInitialized:', isInitialized);
+  console.log('🔄 chatServer exists:', !!chatServer);
   if (!isInitialized || !chatServer) {
     console.log('🔄 Reinitializing Stream clients...');
     initializeClients();
@@ -87,6 +89,7 @@ export const getChatServer = () => {
 
 export const getVideoServer = () => {
   console.log('🔄 getVideoServer called, isInitialized:', isInitialized);
+  console.log('🔄 videoServer exists:', !!videoServer);
   if (!isInitialized || !videoServer) {
     console.log('🔄 Reinitializing Stream clients...');
     initializeClients();

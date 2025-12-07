@@ -23,7 +23,7 @@ import '../styles/chat.css';
 
 
 const StreamChatComponent = () => {
-    const { chatClient, videoClient, isReady, loading: streamLoading } = useStream();
+    const { chatClient, videoClient, isReady, loading: streamLoading, error } = useStream();
     const { authUser, isLoading: authLoading } = useAuth();
 
     const [activeChannel, setActiveChannel] = useState(null);
@@ -326,6 +326,15 @@ const StreamChatComponent = () => {
             <div className="loading-container">
                 <div className="loading-spinner"></div>
                 <p>Loading...</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="error-container">
+                <p>Error initializing chat services: {error}</p>
+                <p>Please try refreshing the page or contact support.</p>
             </div>
         );
     }

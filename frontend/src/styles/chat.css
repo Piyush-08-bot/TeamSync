@@ -364,3 +364,26 @@
     height: 100%;
     background-color: var(--background);
 }
+
+.error-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    background-color: var(--background);
+    padding: 2rem;
+    text-align: center;
+    color: var(--foreground);
+}
+
+.error-container p:first-child {
+    color: #ff6b6b;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.error-container p:last-child {
+    color: var(--muted-foreground);
+    font-size: 0.9rem;
+}
