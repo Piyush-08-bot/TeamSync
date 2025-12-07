@@ -4,7 +4,12 @@ import jwt from 'jsonwebtoken';
 
 export const getChatToken = async (req, res) => {
     try {
+        console.log('=== getChatToken called ===');
+        console.log('User:', req.user?._id);
+        console.log('isInitialized:', isInitialized);
+        
         if (!isInitialized) {
+            console.log('❌ Stream services not initialized');
             return res.status(501).json({
                 success: false,
                 message: "Stream services not configured"
@@ -12,13 +17,18 @@ export const getChatToken = async (req, res) => {
         }
 
         const chatClient = getChatServer();
+        console.log('Chat client:', !!chatClient);
+        
         if (!chatClient) {
+            console.log('❌ Stream chat client not initialized');
             throw new Error('Stream chat client not initialized');
         }
 
         const userId = req.user._id.toString();
+        console.log('Generating token for user:', userId);
 
         const token = chatClient.createToken(userId);
+        console.log('Token generated successfully');
 
         await chatClient.upsertUser({
             id: userId,
@@ -26,6 +36,7 @@ export const getChatToken = async (req, res) => {
             image: req.user.image || '',
             role: 'user'
         });
+        console.log('User upserted successfully');
 
         res.status(200).json({
             success: true,
@@ -36,16 +47,23 @@ export const getChatToken = async (req, res) => {
 
     } catch (error) {
         console.error("Error generating Chat Token:", error.message);
+        console.error("Error stack:", error.stack);
         res.status(500).json({
             success: false,
-            message: "Failed to generate chat token"
+            message: "Failed to generate chat token",
+            error: error.message
         });
     }
 };
 
 export const getVideoToken = async (req, res) => {
     try {
+        console.log('=== getVideoToken called ===');
+        console.log('User:', req.user?._id);
+        console.log('isInitialized:', isInitialized);
+        
         if (!isInitialized) {
+            console.log('❌ Stream services not initialized');
             return res.status(501).json({
                 success: false,
                 message: "Stream services not configured"
@@ -53,14 +71,17 @@ export const getVideoToken = async (req, res) => {
         }
 
         const videoClient = getVideoServer();
+        console.log('Video client:', !!videoClient);
+        
         if (!videoClient) {
+            console.log('❌ Stream video client not initialized');
             throw new Error('Stream video client not initialized');
         }
 
         const userId = req.user._id.toString();
+        console.log('Generating video token for user:', userId);
 
-        
-        
+        // Generate JWT token for video client
         const token = jwt.sign(
             {
                 user_id: userId,
@@ -71,6 +92,7 @@ export const getVideoToken = async (req, res) => {
                 noTimestamp: false,
             }
         );
+        console.log('Video token generated successfully');
 
         res.status(200).json({
             success: true,
@@ -80,22 +102,12 @@ export const getVideoToken = async (req, res) => {
         });
     } catch (error) {
         console.error("Error generating Video Token:", error.message);
-
+        console.error("Error stack:", error.stack);
         
-        try {
-            const fs = await import('fs');
-            const path = await import('path');
-            const logPath = path.resolve(process.cwd(), 'error.log');
-            const timestamp = new Date().toISOString();
-            const logMessage = `[${timestamp}] Video Token Error: ${error.message}\nStack: ${error.stack}\n\n`;
-            fs.appendFileSync(logPath, logMessage);
-        } catch (logErr) {
-            console.error("Failed to write log:", logErr);
-        }
-
         res.status(500).json({
             success: false,
-            message: 'Failed to generate video token'
+            message: 'Failed to generate video token',
+            error: error.message
         });
     }
 };
@@ -128,7 +140,6 @@ export const createDirectMessageChannel = async (req, res) => {
             });
         }
 
-        
         
         const channelId = [currentUserId, targetUserId].sort().join('-');
 
@@ -276,7 +287,6 @@ export const createVideoCall = async (req, res) => {
         
         const callId = `direct-${[currentUserId, targetUserId].sort().join('-')}`;
 
-        
         
 
         

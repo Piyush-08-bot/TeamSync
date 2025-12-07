@@ -56,19 +56,33 @@ const OnboardingPage = () => {
       
       console.log('Using token:', token.substring(0, 20) + '...');
       
-      const response = await axiosInstance.put('/auth/profile', {
-        name,
-        bio,
-        profilePic: profilePicUrl
+      // Fixed the endpoint path to use the correct API route
+      const response = await fetch('/api/auth/profile', {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name,
+          bio,
+          profilePic: profilePicUrl
+        })
       });
 
-      console.log('Profile update response:', response.data);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `Server error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Profile update response:', data);
       
-      if (response.data) {
+      if (data) {
         
         setAuthUser({
           ...authUser,
-          ...response.data,
+          ...data,
           token: authUser.token
         });
       
