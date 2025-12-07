@@ -10,24 +10,6 @@ export const getChatToken = async (req, res) => {
         console.log('ENV.STREAM_API_KEY:', ENV.STREAM_API_KEY ? 'SET' : 'MISSING');
         console.log('ENV.STREAM_API_SECRET:', ENV.STREAM_API_SECRET ? 'SET' : 'MISSING');
 
-        if (!isInitialized) {
-            console.log('❌ Stream services not initialized');
-            return res.status(501).json({
-                success: false,
-                message: "Stream services not configured",
-                details: "Stream clients failed to initialize. Check environment variables."
-            });
-        }
-
-        const chatClient = getChatServer();
-        console.log('Chat client:', !!chatClient);
-        console.log('Chat client key:', chatClient?.key);
-
-        if (!chatClient) {
-            console.log('❌ Stream chat client not initialized');
-            throw new Error('Stream chat client not initialized');
-        }
-
         const userId = req.user._id.toString();
         console.log('Generating token for user:', userId);
         console.log('User details:', req.user.name, req.user.image);
@@ -37,51 +19,21 @@ export const getChatToken = async (req, res) => {
             throw new Error('Missing Stream API credentials');
         }
 
-        console.log('Creating token for user:', userId);
-        console.log('Chat client API key:', chatClient.key);
-        console.log('Chat client secret exists:', !!chatClient.secret);
-        const token = chatClient.createToken(userId);
-        console.log('Token generated successfully');
-
-        // Skip upsertUser for now to test if token generation works
-        console.log('Skipping upsertUser for testing purposes');
-        
-        /*
-        console.log('Upserting user:', userId);
-        console.log('User data:', {
-            id: userId,
-            name: req.user.name,
-            image: req.user.image || '',
-            role: 'user'
-        });
-        
-        // Add retry mechanism for upsertUser
-        let upsertSuccess = false;
-        let attempts = 0;
-        const maxAttempts = 3;
-        
-        while (!upsertSuccess && attempts < maxAttempts) {
-            try {
-                attempts++;
-                console.log(`Attempt ${attempts} to upsert user...`);
-                await chatClient.upsertUser({
-                    id: userId,
-                    name: req.user.name,
-                    image: req.user.image || '',
-                    role: 'user'
-                });
-                upsertSuccess = true;
-                console.log('User upserted successfully');
-            } catch (upsertError) {
-                console.error(`Attempt ${attempts} failed:`, upsertError.message);
-                if (attempts >= maxAttempts) {
-                    throw upsertError;
-                }
-                // Wait a bit before retrying
-                await new Promise(resolve => setTimeout(resolve, 1000 * attempts));
+        // Manually create JWT token using the secret
+        console.log('Manually signing JWT token for user:', userId);
+        const token = jwt.sign(
+            {
+                user_id: userId,
+            },
+            ENV.STREAM_API_SECRET,
+            {
+                algorithm: 'HS256',
+                noTimestamp: false,
+                // Add expiration if needed
+                expiresIn: '24h'
             }
-        }
-        */
+        );
+        console.log('Token generated successfully');
 
         res.status(200).json({
             success: true,
