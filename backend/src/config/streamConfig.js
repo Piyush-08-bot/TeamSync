@@ -50,6 +50,11 @@ const initializeClients = () => {
     chatServer = StreamChat.getInstance(ENV.STREAM_API_KEY, ENV.STREAM_API_SECRET);
     console.log('✅ StreamChat client created with API key:', chatServer.key);
     
+    // Verify that the client has the correct credentials
+    console.log('StreamChat client key:', chatServer.key);
+    console.log('StreamChat client secret exists:', !!chatServer.secret);
+    console.log('StreamChat client baseURL:', chatServer.baseURL);
+    
     if (videoServer) {
       console.log('🔄 Disposing existing StreamVideoClient...');
       try {
