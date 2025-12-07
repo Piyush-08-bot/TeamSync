@@ -1,6 +1,13 @@
+>>>>>>> f039418310695a73ba54394d74519992caeab24d
 # Capstone Project - JWT Authentication Implementation
 
-This project demonstrates a complete migration from Clerk-based authentication to JWT-based authentication.
+## 🌐 Hosted Links
+
+### 🖥️ Frontend (Deployed on Vercel)
+🔗 https://team-sync-beryl.vercel.app/
+
+### ⚙️ Backend (Deployed on Vercel)
+🔗 https://team-sync-backend2.vercel.app/
 
 ## Backend
 
@@ -117,18 +124,5 @@ If you encounter MongoDB connection timeouts on Vercel:
 2. Check that your MongoDB Atlas cluster allows connections from Vercel's IP addresses
 3. Use the `/health` endpoint to check the database connection status
 4. Ensure your JWT_SECRET is set and is sufficiently complex
-
-
-
-
-
-
-
-
-
-
-
-<!-- 
-Chat token : eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjkxNDgzNTBhM2Y2MDZhNWUwNGJhNzllIn0.08CHIqHsdERcBeLy7czgtqiADcaLvMkEZqhSAj3Sx0Y
-
-Video token : eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjkxNDgzNTBhM2Y2MDZhNWUwNGJhNzllIiwiaWF0IjoxNzY0MDk5NTI1LCJleHAiOjE3NjQxMDMxMjV9.tW0JrS6PzTQylSD73CtDCMz9lIwBDDTaTK2NdNC9r9g -->
+=======
+>>>>>>> f039418310695a73ba54394d74519992caeab24d
