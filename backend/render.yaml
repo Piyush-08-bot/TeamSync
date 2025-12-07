@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: team-sync-backend
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5001
+      - key: CLIENT_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: MONGO_URI
+        sync: false
+      - key: STREAM_API_KEY
+        sync: false
+      - key: STREAM_API_SECRET
+        sync: false
