@@ -104,14 +104,14 @@ export const createDirectMessageChannel = async (req, res) => {
         // Create Stream chat client
         const serverClient = StreamChat.getInstance(ENV.STREAM_API_KEY, ENV.STREAM_API_SECRET);
         
-        // Actually create the channel in Stream
-        const channel = serverClient.channel('messaging', channelId, {
+        // Create the channel with proper member configuration
+        const channel = serverClient.channel('messaging', channelId);
+        
+        // Create or update the channel with both users as members
+        await channel.create({
             members: [currentUserId, targetUserId],
             created_by_id: currentUserId
         });
-        
-        // Create the channel in Stream
-        await channel.create();
 
         res.status(200).json({
             success: true,
