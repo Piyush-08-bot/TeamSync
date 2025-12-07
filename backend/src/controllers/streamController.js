@@ -77,6 +77,19 @@ export const createDirectMessageChannel = async (req, res) => {
         console.log("Request body:", req.body);
         console.log("User from token:", req.user);
         
+        // Ensure database connection
+        try {
+            await connectDB();
+            console.log("Database connection established");
+        } catch (dbError) {
+            console.error("Database connection failed:", dbError.message);
+            return res.status(503).json({
+                success: false,
+                message: "Database connection failed",
+                error: dbError.message
+            });
+        }
+        
         // Validate that we have the required credentials
         if (!ENV.STREAM_API_KEY || !ENV.STREAM_API_SECRET) {
             console.error("Stream services not configured - Missing API key or secret");
