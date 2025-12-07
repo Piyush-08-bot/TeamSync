@@ -18,7 +18,7 @@ let chatServer = null;
 let videoServer = null;
 let isInitialized = false;
 
-const initializeClients = () => {
+const initializeClients = async () => {
   try {
     console.log('🔄 Initializing Stream clients...');
     console.log('STREAM_API_KEY:', ENV.STREAM_API_KEY ? 'SET' : 'MISSING');
@@ -47,8 +47,23 @@ const initializeClients = () => {
     console.log('Secret length:', ENV.STREAM_API_SECRET?.length);
     
     // Create new client instance with explicit API key and secret
-    chatServer = new StreamChat(ENV.STREAM_API_KEY, ENV.STREAM_API_SECRET);
+    // Using the constructor instead of getInstance to ensure proper initialization
+    chatServer = new StreamChat(ENV.STREAM_API_KEY, ENV.STREAM_API_SECRET, {
+      // Additional options for debugging
+      logger: (level, message, extraData) => {
+        console.log(`[StreamChat][${level}] ${message}`, extraData);
+      }
+    });
     console.log('✅ StreamChat client created with API key:', chatServer.key);
+    
+    // Test the connection by getting the app info
+    console.log('🔄 Testing StreamChat connection...');
+    try {
+      const app = await chatServer.getAppSettings();
+      console.log('✅ StreamChat connection test successful:', app);
+    } catch (testError) {
+      console.error('❌ StreamChat connection test failed:', testError.message);
+    }
     
     if (videoServer) {
       console.log('🔄 Disposing existing StreamVideoClient...');
@@ -80,8 +95,9 @@ const initializeClients = () => {
 };
 
 console.log('🔄 Calling initializeClients...');
-const result = initializeClients();
-console.log('🔄 initializeClients result:', result);
+initializeClients().then(result => {
+  console.log('🔄 initializeClients result:', result);
+});
 
 export const getChatServer = () => {
   console.log('🔄 getChatServer called, isInitialized:', isInitialized);

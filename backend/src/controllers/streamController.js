@@ -10,15 +10,6 @@ export const getChatToken = async (req, res) => {
         console.log('ENV.STREAM_API_KEY:', ENV.STREAM_API_KEY ? 'SET' : 'MISSING');
         console.log('ENV.STREAM_API_SECRET:', ENV.STREAM_API_SECRET ? 'SET' : 'MISSING');
 
-        if (!isInitialized) {
-            console.log('❌ Stream services not initialized');
-            return res.status(501).json({
-                success: false,
-                message: "Stream services not configured",
-                details: "Stream clients failed to initialize. Check environment variables."
-            });
-        }
-
         const chatClient = getChatServer();
         console.log('Chat client:', !!chatClient);
         console.log('Chat client key:', chatClient?.key);
