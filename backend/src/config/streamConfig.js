@@ -22,26 +22,42 @@ const initializeClients = () => {
     console.log('🔄 Initializing Stream clients...');
     console.log('STREAM_API_KEY:', ENV.STREAM_API_KEY ? 'SET' : 'MISSING');
     console.log('STREAM_API_SECRET:', ENV.STREAM_API_SECRET ? 'SET' : 'MISSING');
-
+    
     if (!validateEnv()) {
       console.log('❌ Stream validation failed');
+      isInitialized = false;
       return false;
     }
 
-    if (!chatServer) {
-      console.log('🔄 Creating StreamChat client...');
-      chatServer = StreamChat.getInstance(ENV.STREAM_API_KEY, ENV.STREAM_API_SECRET);
-      console.log('✅ StreamChat client created');
+    // Always recreate clients to ensure fresh connections
+    if (chatServer) {
+      console.log('🔄 Disposing existing StreamChat client...');
+      try {
+        // StreamChat doesn't have a dispose method, but we'll create a new instance
+      } catch (e) {
+        console.warn('Warning while disposing chat client:', e.message);
+      }
     }
+    
+    console.log('🔄 Creating StreamChat client...');
+    chatServer = StreamChat.getInstance(ENV.STREAM_API_KEY, ENV.STREAM_API_SECRET);
+    console.log('✅ StreamChat client created');
 
-    if (!videoServer) {
-      console.log('🔄 Creating StreamVideoClient...');
-      videoServer = new StreamVideoClient({
-        apiKey: ENV.STREAM_API_KEY,
-        secret: ENV.STREAM_API_SECRET,
-      });
-      console.log('✅ StreamVideoClient created');
+    if (videoServer) {
+      console.log('🔄 Disposing existing StreamVideoClient...');
+      try {
+        // StreamVideoClient doesn't have a dispose method, but we'll create a new instance
+      } catch (e) {
+        console.warn('Warning while disposing video client:', e.message);
+      }
     }
+    
+    console.log('🔄 Creating StreamVideoClient...');
+    videoServer = new StreamVideoClient({
+      apiKey: ENV.STREAM_API_KEY,
+      secret: ENV.STREAM_API_SECRET,
+    });
+    console.log('✅ StreamVideoClient created');
 
     isInitialized = true;
     console.log('✅ Stream clients initialized');
@@ -49,6 +65,9 @@ const initializeClients = () => {
   } catch (error) {
     console.error('❌ Failed to initialize Stream clients:', error.message);
     console.error('Error stack:', error.stack);
+    isInitialized = false;
+    chatServer = null;
+    videoServer = null;
     return false;
   }
 };
@@ -59,8 +78,8 @@ console.log('🔄 initializeClients result:', result);
 
 export const getChatServer = () => {
   console.log('🔄 getChatServer called, isInitialized:', isInitialized);
-  if (!chatServer) {
-    console.log('🔄 Chat server not found, reinitializing...');
+  if (!isInitialized || !chatServer) {
+    console.log('🔄 Reinitializing Stream clients...');
     initializeClients();
   }
   return chatServer;
@@ -68,8 +87,8 @@ export const getChatServer = () => {
 
 export const getVideoServer = () => {
   console.log('🔄 getVideoServer called, isInitialized:', isInitialized);
-  if (!videoServer) {
-    console.log('🔄 Video server not found, reinitializing...');
+  if (!isInitialized || !videoServer) {
+    console.log('🔄 Reinitializing Stream clients...');
     initializeClients();
   }
   return videoServer;
