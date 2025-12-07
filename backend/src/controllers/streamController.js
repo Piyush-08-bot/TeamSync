@@ -86,6 +86,13 @@ export const createDirectMessageChannel = async (req, res) => {
             });
         }
 
+        // Log the credentials info (masked)
+        console.log("Stream API Key present:", !!ENV.STREAM_API_KEY);
+        console.log("Stream API Secret present:", !!ENV.STREAM_API_SECRET);
+        if (ENV.STREAM_API_KEY) {
+            console.log("Stream API Key (first 5 chars):", ENV.STREAM_API_KEY.substring(0, 5));
+        }
+
         // Test if Stream credentials are valid
         try {
             const serverClient = StreamChat.getInstance(ENV.STREAM_API_KEY, ENV.STREAM_API_SECRET);
@@ -94,6 +101,7 @@ export const createDirectMessageChannel = async (req, res) => {
             console.log("Stream credentials validated successfully");
         } catch (credentialError) {
             console.error("Stream credentials validation failed:", credentialError.message);
+            console.error("Credential error stack:", credentialError.stack);
             return res.status(500).json({
                 success: false,
                 message: "Invalid Stream credentials",
