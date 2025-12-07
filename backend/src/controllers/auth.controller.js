@@ -5,11 +5,15 @@ import { connectDB } from "../config/db.js";
 import { ENV } from "../config/env.js";
 
 const generateToken = (userId) => {
+    console.log('Generating token for userId:', userId);
+    console.log('JWT_SECRET present:', !!ENV.JWT_SECRET);
     if (!ENV.JWT_SECRET) {
         console.error("CRITICAL ERROR: JWT_SECRET is missing in environment variables!");
         throw new Error("JWT_SECRET is not configured");
     }
-    return jwt.sign({ userId }, ENV.JWT_SECRET, { expiresIn: "15d" });
+    const token = jwt.sign({ userId }, ENV.JWT_SECRET, { expiresIn: "15d" });
+    console.log('Token generated successfully');
+    return token;
 };
 
 export const registerUser = async (req, res) => {
@@ -48,20 +52,35 @@ export const registerUser = async (req, res) => {
 
 export const loginUser = async (req, res) => {
     try {
+        console.log('Login attempt for email:', req.body.email);
         await connectDB();
         const { email, password } = req.body;
 
-        const user = await User.findOne({ email });
+        if (!email || !password) {
+            console.log('Missing email or password');
+            return res.status(400).json({ message: "Email and password are required" });
+        }
+
+        console.log('Finding user with email:', email);
+        const user = await User.findOne({ email }).select('+password');
+        console.log('User found:', !!user);
+        
         if (!user) {
+            console.log('User not found');
             return res.status(400).json({ message: "Invalid credentials" });
         }
 
+        console.log('Comparing password for user:', user._id);
         const isPasswordCorrect = await user.comparePassword(password);
+        console.log('Password correct:', isPasswordCorrect);
+        
         if (!isPasswordCorrect) {
             return res.status(400).json({ message: "Invalid credentials" });
         }
 
+        console.log('Generating token for user:', user._id);
         const token = generateToken(user._id);
+        console.log('Token generated successfully');
 
         res.status(200).json({
             _id: user._id,
@@ -73,6 +92,7 @@ export const loginUser = async (req, res) => {
         });
     } catch (error) {
         console.error("Login error:", error.message);
+        console.error("Error stack:", error.stack);
         res.status(500).json({
             message: "Login failed",
             error: error.message,

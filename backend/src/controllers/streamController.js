@@ -9,7 +9,7 @@ export const getChatToken = async (req, res) => {
         console.log('isInitialized:', isInitialized);
         console.log('ENV.STREAM_API_KEY:', ENV.STREAM_API_KEY ? 'SET' : 'MISSING');
         console.log('ENV.STREAM_API_SECRET:', ENV.STREAM_API_SECRET ? 'SET' : 'MISSING');
-        
+
         if (!isInitialized) {
             console.log('❌ Stream services not initialized');
             return res.status(501).json({
@@ -21,7 +21,7 @@ export const getChatToken = async (req, res) => {
 
         const chatClient = getChatServer();
         console.log('Chat client:', !!chatClient);
-        
+
         if (!chatClient) {
             console.log('❌ Stream chat client not initialized');
             throw new Error('Stream chat client not initialized');
@@ -72,7 +72,7 @@ export const getVideoToken = async (req, res) => {
         console.log('isInitialized:', isInitialized);
         console.log('ENV.STREAM_API_KEY:', ENV.STREAM_API_KEY ? 'SET' : 'MISSING');
         console.log('ENV.STREAM_API_SECRET:', ENV.STREAM_API_SECRET ? 'SET' : 'MISSING');
-        
+
         if (!isInitialized) {
             console.log('❌ Stream services not initialized');
             return res.status(501).json({
@@ -84,7 +84,7 @@ export const getVideoToken = async (req, res) => {
 
         const videoClient = getVideoServer();
         console.log('Video client:', !!videoClient);
-        
+
         if (!videoClient) {
             console.log('❌ Stream video client not initialized');
             throw new Error('Stream video client not initialized');
@@ -120,7 +120,7 @@ export const getVideoToken = async (req, res) => {
     } catch (error) {
         console.error("Error generating Video Token:", error.message);
         console.error("Error stack:", error.stack);
-        
+
         res.status(500).json({
             success: false,
             message: 'Failed to generate video token',
@@ -158,10 +158,10 @@ export const createDirectMessageChannel = async (req, res) => {
             });
         }
 
-        
+
         const channelId = [currentUserId, targetUserId].sort().join('-');
 
-        
+
         let channel = chatClient.channel('messaging', channelId);
 
         try {
@@ -174,19 +174,19 @@ export const createDirectMessageChannel = async (req, res) => {
                 });
             }
         } catch (error) {
-            
+
         }
 
-        
+
         channel = chatClient.channel('messaging', channelId, {
             members: [currentUserId, targetUserId],
             created_by_id: currentUserId
         });
 
-        
+
         await channel.watch();
 
-        
+
         const state = await channel.query({ messages: { limit: 1 } });
         if (state.messages.length === 0) {
             await channel.sendMessage({
@@ -240,14 +240,14 @@ export const createGroupChannel = async (req, res) => {
             });
         }
 
-        
+
         const allMemberIds = [currentUserId, ...userIds];
         const uniqueMemberIds = [...new Set(allMemberIds.map(id => id.toString()))];
 
-        
+
         const channelId = `group-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-        
+
         const channel = chatClient.channel('messaging', channelId, {
             name: groupName.trim(),
             members: uniqueMemberIds,
@@ -255,7 +255,7 @@ export const createGroupChannel = async (req, res) => {
             group: true
         });
 
-        
+
         await channel.watch();
 
         res.status(201).json({
@@ -302,12 +302,12 @@ export const createVideoCall = async (req, res) => {
             });
         }
 
-        
+
         const callId = `direct-${[currentUserId, targetUserId].sort().join('-')}`;
 
-        
 
-        
+
+
         const currentUserToken = jwt.sign(
             { user_id: currentUserId },
             ENV.STREAM_API_SECRET,

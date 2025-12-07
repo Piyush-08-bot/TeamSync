@@ -22,7 +22,7 @@ const initializeClients = () => {
     console.log('🔄 Initializing Stream clients...');
     console.log('STREAM_API_KEY:', ENV.STREAM_API_KEY ? 'SET' : 'MISSING');
     console.log('STREAM_API_SECRET:', ENV.STREAM_API_SECRET ? 'SET' : 'MISSING');
-    
+
     if (!validateEnv()) {
       console.log('❌ Stream validation failed');
       isInitialized = false;
@@ -38,7 +38,7 @@ const initializeClients = () => {
         console.warn('Warning while disposing chat client:', e.message);
       }
     }
-    
+
     console.log('🔄 Creating StreamChat client...');
     chatServer = StreamChat.getInstance(ENV.STREAM_API_KEY, ENV.STREAM_API_SECRET);
     console.log('✅ StreamChat client created');
@@ -51,7 +51,7 @@ const initializeClients = () => {
         console.warn('Warning while disposing video client:', e.message);
       }
     }
-    
+
     console.log('🔄 Creating StreamVideoClient...');
     videoServer = new StreamVideoClient({
       apiKey: ENV.STREAM_API_KEY,
