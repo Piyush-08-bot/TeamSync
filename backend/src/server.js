@@ -92,7 +92,7 @@ connectDB().then(() => {
         'POST /api/auth/register',
         'POST /api/auth/login',
         'GET /api/auth/me',
-        'PUT /api/auth/profile', 
+        'PUT /api/auth/profile',
         'DELETE /api/auth/profile',
         'GET /api/chat/user/search?userId=...&email=...',
         'GET /api/chat/test',

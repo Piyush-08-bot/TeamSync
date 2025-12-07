@@ -1,10 +1,10 @@
 import { ENV } from "../config/env.js";
-import jwt from 'jsonwebtoken';
+import { StreamChat } from 'stream-chat';
 
 export const getChatToken = async (req, res) => {
     try {
         const userId = req.user._id.toString();
-        
+
         // Validate that we have the required credentials
         if (!ENV.STREAM_API_KEY || !ENV.STREAM_API_SECRET) {
             return res.status(500).json({
@@ -13,15 +13,11 @@ export const getChatToken = async (req, res) => {
             });
         }
 
-        // Create JWT token for Stream chat
-        const token = jwt.sign(
-            { user_id: userId },
-            ENV.STREAM_API_SECRET,
-            { 
-                algorithm: 'HS256',
-                expiresIn: '24h'
-            }
-        );
+        // Create Stream chat client
+        const serverClient = StreamChat.getInstance(ENV.STREAM_API_KEY, ENV.STREAM_API_SECRET);
+        
+        // Create token for Stream chat
+        const token = serverClient.createToken(userId);
 
         res.status(200).json({
             success: true,
@@ -43,7 +39,7 @@ export const getChatToken = async (req, res) => {
 export const getVideoToken = async (req, res) => {
     try {
         const userId = req.user._id.toString();
-        
+
         // Validate that we have the required credentials
         if (!ENV.STREAM_API_KEY || !ENV.STREAM_API_SECRET) {
             return res.status(500).json({
@@ -52,15 +48,11 @@ export const getVideoToken = async (req, res) => {
             });
         }
 
-        // Create JWT token for Stream video
-        const token = jwt.sign(
-            { user_id: userId },
-            ENV.STREAM_API_SECRET,
-            { 
-                algorithm: 'HS256',
-                expiresIn: '24h'
-            }
-        );
+        // Create Stream chat client
+        const serverClient = StreamChat.getInstance(ENV.STREAM_API_KEY, ENV.STREAM_API_SECRET);
+        
+        // Create token for Stream video
+        const token = serverClient.createToken(userId);
 
         res.status(200).json({
             success: true,
@@ -88,7 +80,7 @@ export const createDirectMessageChannel = async (req, res) => {
                 message: "Stream services not configured"
             });
         }
-        
+
         const { targetUserId } = req.body;
         const currentUserId = req.user._id.toString();
 
@@ -134,7 +126,7 @@ export const createGroupChannel = async (req, res) => {
                 message: "Stream services not configured"
             });
         }
-        
+
         const { groupName, userIds } = req.body;
         const currentUserId = req.user._id.toString();
 
@@ -180,7 +172,7 @@ export const createVideoCall = async (req, res) => {
                 message: "Stream services not configured"
             });
         }
-        
+
         const { targetUserId } = req.body;
         const currentUserId = req.user._id.toString();
 
@@ -200,16 +192,12 @@ export const createVideoCall = async (req, res) => {
 
         const callId = `direct-${[currentUserId, targetUserId].sort().join('-')}`;
 
-        const currentUserToken = jwt.sign(
-            { user_id: currentUserId },
-            ENV.STREAM_API_SECRET,
-            { algorithm: 'HS256', noTimestamp: false }
-        );
-        const targetUserToken = jwt.sign(
-            { user_id: targetUserId },
-            ENV.STREAM_API_SECRET,
-            { algorithm: 'HS256', noTimestamp: false }
-        );
+        // Create Stream chat client
+        const serverClient = StreamChat.getInstance(ENV.STREAM_API_KEY, ENV.STREAM_API_SECRET);
+        
+        // Create tokens for both users
+        const currentUserToken = serverClient.createToken(currentUserId);
+        const targetUserToken = serverClient.createToken(targetUserId);
 
         res.status(200).json({
             success: true,

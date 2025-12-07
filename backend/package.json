@@ -12,6 +12,9 @@
   "author": "",
   "license": "ISC",
   "type": "module",
+  "engines": {
+    "node": "20.x"
+  },
   "dependencies": {
     "@stream-io/node-sdk": "^0.7.21",
     "bcryptjs": "^3.0.3",

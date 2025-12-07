@@ -45,11 +45,11 @@ userSchema.methods.comparePassword = async function (candidatePassword) {
   console.log('  Candidate password type:', typeof candidatePassword);
   console.log('  Stored password type:', typeof this.password);
   console.log('  Stored password value:', this.password);
-  
+
   if (!candidatePassword || !this.password) {
     throw new Error('Password comparison failed: missing password data');
   }
-  
+
   const result = await bcrypt.compare(candidatePassword, this.password);
   console.log('Password comparison result:', result);
   return result;

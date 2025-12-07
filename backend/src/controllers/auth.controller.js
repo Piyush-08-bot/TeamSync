@@ -64,7 +64,7 @@ export const loginUser = async (req, res) => {
         console.log('Finding user with email:', email);
         const user = await User.findOne({ email }).select('+password');
         console.log('User found:', !!user);
-        
+
         if (!user) {
             console.log('User not found');
             return res.status(400).json({ message: "Invalid credentials" });
@@ -73,7 +73,7 @@ export const loginUser = async (req, res) => {
         console.log('Comparing password for user:', user._id);
         const isPasswordCorrect = await user.comparePassword(password);
         console.log('Password correct:', isPasswordCorrect);
-        
+
         if (!isPasswordCorrect) {
             return res.status(400).json({ message: "Invalid credentials" });
         }

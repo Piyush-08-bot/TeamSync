@@ -1,5 +1,3 @@
-
-
 .chat-container {
     display: flex;
     height: 100vh;
@@ -69,7 +67,7 @@
     overflow-y: auto;
     padding: 1.5rem;
     padding-bottom: 100px;
-    
+
     background-color: var(--background);
 }
 
@@ -123,7 +121,7 @@
     background-color: var(--primary);
     color: var(--primary-foreground);
     border-bottom-right-radius: 2px;
-    
+
 }
 
 
@@ -136,12 +134,12 @@
 
 .str-chat__message-metadata {
     display: none;
-    
+
 }
 
 .str-chat__message-simple-time {
     display: none;
-    
+
 }
 
 
@@ -162,7 +160,7 @@
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2) !important;
     z-index: 50;
     backdrop-filter: blur(10px);
-    
+
 }
 
 .str-chat .str-chat__input-flat-wrapper {
@@ -228,7 +226,7 @@
     flex-shrink: 0;
     transition: all 0.2s ease;
     margin-bottom: 2px;
-    
+
 }
 
 .str-chat__send-button:hover {
@@ -255,7 +253,7 @@
     color: var(--muted-foreground);
     transition: all 0.2s ease;
     margin-bottom: 2px;
-    
+
 }
 
 .str-chat__fileupload-wrapper .str-chat__tooltip {
@@ -322,7 +320,7 @@
 
 .start-chat-btn {
     background-color: var(--secondary);
-    
+
     color: var(--foreground);
     padding: 0.875rem 2rem;
     border-radius: 2rem;
@@ -342,9 +340,9 @@
     box-shadow: none;
     background-color: var(--secondary);
     border-color: var(--primary);
-    
+
     color: var(--primary);
-    
+
 }
 
 .start-chat-btn:active {

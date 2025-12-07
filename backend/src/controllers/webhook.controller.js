@@ -1,13 +1,13 @@
 export const handleStreamWebhook = async (req, res) => {
     try {
-        
-        
+
+
 
         const { type, user, message, channel } = req.body;
 
         console.log(`📥 Stream Webhook Event: ${type}`);
 
-        
+
         switch (type) {
             case 'user.created':
                 console.log(`👤 New user created: ${user?.id}`);
@@ -25,7 +25,7 @@ export const handleStreamWebhook = async (req, res) => {
                 console.log(`🔄 Other event: ${type}`);
         }
 
-        
+
         res.status(200).json({ received: true });
     } catch (error) {
         console.error("Error handling Stream webhook:", error.message);
@@ -40,8 +40,8 @@ export const handlePresendMessageHook = async (req, res) => {
 
         console.log(`📝 Processing message: ${message?.text?.substring(0, 50)}...`);
 
-        
-        const profanityWords = ['badword1', 'badword2']; 
+
+        const profanityWords = ['badword1', 'badword2'];
         const messageText = message?.text?.toLowerCase() || '';
 
         const containsProfanity = profanityWords.some(word => messageText.includes(word));
@@ -53,7 +53,7 @@ export const handlePresendMessageHook = async (req, res) => {
             });
         }
 
-        
+
         const enrichedMessage = {
             ...message,
             metadata: {
