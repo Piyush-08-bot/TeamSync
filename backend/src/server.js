@@ -9,12 +9,15 @@ import cors from 'cors';
 
 const app = express();
 
+// Configure CORS for both development and production
+const corsOptions = {
+  origin: [ENV.CLIENT_URL, 'http://localhost:5176', 'http://localhost:5173'],
+  credentials: true,
+  optionsSuccessStatus: 200
+};
 
 app.use(express.json());
-app.use(cors({
-  origin: true,
-  credentials: true
-}));
+app.use(cors(corsOptions));
 
 
 app.use((req, res, next) => {

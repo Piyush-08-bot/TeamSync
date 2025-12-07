@@ -7,7 +7,7 @@
 🔗 https://team-sync-beryl.vercel.app/
 
 ### ⚙️ Backend (Deployed on Vercel)
-🔗 https://team-sync-backend2.vercel.app/
+🔗 https://team-sync-backend.vercel.app/
 
 ## Backend
 
