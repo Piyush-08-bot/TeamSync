@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { axiosInstance } from '../lib/axios';
+import { API_BASE_URL } from '../utils/constants';
 import './OnboardingPage.css';
 
 const OnboardingPage = () => {
@@ -56,8 +56,8 @@ const OnboardingPage = () => {
       
       console.log('Using token:', token.substring(0, 20) + '...');
       
-      // Fixed the endpoint path to use the correct API route
-      const response = await fetch('/api/auth/profile', {
+      // Use the full API base URL instead of relative path
+      const response = await fetch(`${API_BASE_URL}/auth/profile`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -71,8 +71,16 @@ const OnboardingPage = () => {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || `Server error: ${response.status}`);
+        // Handle non-JSON responses safely
+        let errorMessage = `Server error: ${response.status} ${response.statusText}`;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorMessage;
+        } catch (parseError) {
+          // If JSON parsing fails, use the status text
+          console.warn('Failed to parse error response as JSON:', parseError);
+        }
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
