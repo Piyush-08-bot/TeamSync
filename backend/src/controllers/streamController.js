@@ -3,6 +3,18 @@ import { ENV } from "../config/env.js";
 import jwt from 'jsonwebtoken';
 
 export const getChatToken = async (req, res) => {
+    console.log('=== getChatToken FUNCTION EXECUTING ===');
+    
+    // Immediately return a test response to see if our function is being called
+    if (process.env.TEST_MODE) {
+        console.log('=== RETURNING TEST RESPONSE ===');
+        return res.status(200).json({
+            success: true,
+            message: 'Test response',
+            test: true
+        });
+    }
+    
     try {
         console.log('=== MANUAL JWT TOKEN GENERATION STARTED ===');
         console.log('User:', req.user?._id);

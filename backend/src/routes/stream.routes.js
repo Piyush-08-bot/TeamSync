@@ -14,6 +14,16 @@ const router = express.Router();
 router.get('/chat/token', protectRoute, getChatToken);
 router.get('/video/token', protectRoute, getVideoToken);
 
+// Add a simple test route to verify the route is working
+router.get('/test-simple', protectRoute, (req, res) => {
+    console.log('Simple test route called');
+    res.status(200).json({
+        success: true,
+        message: 'Test route working',
+        user: req.user._id
+    });
+});
+
 // Add a test endpoint to verify Stream credentials
 router.get('/test-credentials', async (req, res) => {
     try {
