@@ -73,18 +73,42 @@ export const getVideoToken = async (req, res) => {
 
 export const createDirectMessageChannel = async (req, res) => {
     try {
+        console.log("Starting createDirectMessageChannel function");
+        console.log("Request body:", req.body);
+        console.log("User from token:", req.user);
+        
         // Validate that we have the required credentials
         if (!ENV.STREAM_API_KEY || !ENV.STREAM_API_SECRET) {
+            console.error("Stream services not configured - Missing API key or secret");
             return res.status(501).json({
                 success: false,
                 message: "Stream services not configured"
             });
         }
 
+        // Test if Stream credentials are valid
+        try {
+            const serverClient = StreamChat.getInstance(ENV.STREAM_API_KEY, ENV.STREAM_API_SECRET);
+            // Test the connection by getting the app settings
+            await serverClient.getAppSettings();
+            console.log("Stream credentials validated successfully");
+        } catch (credentialError) {
+            console.error("Stream credentials validation failed:", credentialError.message);
+            return res.status(500).json({
+                success: false,
+                message: "Invalid Stream credentials",
+                error: credentialError.message
+            });
+        }
+
         const { targetUserId } = req.body;
         const currentUserId = req.user._id.toString();
 
+        console.log("Current user ID:", currentUserId);
+        console.log("Target user ID:", targetUserId);
+
         if (!targetUserId) {
+            console.error("Target user ID is required");
             return res.status(400).json({
                 success: false,
                 message: "Target user ID is required"
@@ -92,6 +116,7 @@ export const createDirectMessageChannel = async (req, res) => {
         }
 
         if (targetUserId === currentUserId) {
+            console.error("Cannot create a channel with yourself");
             return res.status(400).json({
                 success: false,
                 message: "Cannot create a channel with yourself"
@@ -100,18 +125,23 @@ export const createDirectMessageChannel = async (req, res) => {
 
         // Create channel ID
         const channelId = [currentUserId, targetUserId].sort().join('-');
+        console.log("Generated channel ID:", channelId);
 
         // Create Stream chat client
+        console.log("Creating StreamChat client with API key:", ENV.STREAM_API_KEY.substring(0, 5) + "...");
         const serverClient = StreamChat.getInstance(ENV.STREAM_API_KEY, ENV.STREAM_API_SECRET);
         
         // Create the channel with proper member configuration
         const channel = serverClient.channel('messaging', channelId);
         
+        console.log("Creating channel with members:", [currentUserId, targetUserId]);
         // Create or update the channel with both users as members
         await channel.create({
             members: [currentUserId, targetUserId],
             created_by_id: currentUserId
         });
+        
+        console.log("Channel created successfully");
 
         res.status(200).json({
             success: true,
@@ -120,7 +150,8 @@ export const createDirectMessageChannel = async (req, res) => {
         });
 
     } catch (error) {
-        console.error("Error creating direct message channel:", error.message);
+        console.error("Error creating direct message channel:", error);
+        console.error("Error stack:", error.stack);
         res.status(500).json({
             success: false,
             message: 'Failed to create direct message channel',
