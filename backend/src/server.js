@@ -10,12 +10,20 @@ import cors from 'cors';
 const app = express();
 
 // Configure CORS for both development and production
+// Adding multiple possible frontend domains to handle different deployment scenarios
 const corsOptions = {
-  origin: [ENV.CLIENT_URL, 'http://localhost:5176', 'http://localhost:5173', 'https://team-sync-beryl.vercel.app'],
+  origin: [
+    ENV.CLIENT_URL, 
+    'http://localhost:5176', 
+    'http://localhost:5173', 
+    'https://team-sync-beryl.vercel.app',
+    'https://team-sync-backend-orcin.vercel.app'  // Add the actual backend domain
+  ],
   credentials: true,
   optionsSuccessStatus: 200,
-  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'], // Explicitly allow all methods
-  allowedHeaders: ['Content-Type', 'Authorization'] // Explicitly allow headers
+  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['Access-Control-Allow-Origin'] // Expose the header
 };
 
 app.use(express.json({ limit: '10mb' }));
@@ -27,6 +35,7 @@ app.options('*', cors(corsOptions));
 // Log all incoming requests for debugging
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.path} from ${req.ip}`);
+  console.log(`Origin: ${req.headers.origin}`);
   console.log(`Headers:`, JSON.stringify(req.headers, null, 2));
   next();
 });
@@ -41,7 +50,8 @@ app.get('/health', async (req, res) => {
     environment: ENV.NODE_ENV,
     streamApiKeySet: !!ENV.STREAM_API_KEY,
     streamApiSecretSet: !!ENV.STREAM_API_SECRET,
-    clientId: ENV.CLIENT_URL
+    clientId: ENV.CLIENT_URL,
+    corsOrigins: corsOptions.origin
   });
 });
 
@@ -114,6 +124,7 @@ connectDB().then(() => {
     console.log("✅ Server running on port:", ENV.PORT);
     console.log("Environment:", ENV.NODE_ENV);
     console.log("Client URL:", ENV.CLIENT_URL);
+    console.log("CORS Origins:", corsOptions.origin);
   });
 
   process.on('SIGINT', async () => {

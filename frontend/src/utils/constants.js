@@ -2,9 +2,9 @@ import { version } from '../../package.json';
 
 const isProduction = import.meta.env.PROD;
 // Use the VITE_API_BASE_URL from environment variables in production
-// Fall back to team-sync-backend.vercel.app if not set
+// Fall back to team-sync-backend-orcin.vercel.app if not set
 const backendDomain = isProduction 
-  ? (import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'https://team-sync-backend.vercel.app')
+  ? (import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'https://team-sync-backend-orcin.vercel.app')
   : 'http://localhost:5001';
 
 export const API_BASE_URL = isProduction
