@@ -225,12 +225,21 @@ const CustomChannelList = ({ loading, error, channels, setActiveChannel, activeC
             console.log('Connection state changed - refreshing channels');
             setTimeout(() => loadChannels(), 200);
         };
+        
+        // Listen for custom channel created event
+        const handleCustomChannelCreated = () => {
+            console.log('Custom channel created event - refreshing list');
+            setTimeout(() => loadChannels(), 300);
+        };
 
         chatClient.on('channel.created', handleChannelCreated);
         chatClient.on('channel.updated', handleChannelUpdated);
         chatClient.on('message.new', handleMessageNew);
         chatClient.on('connection.changed', handleConnectionChanged);
         chatClient.on('connection.recovered', handleConnectionChanged);
+        
+        // Add listener for custom event
+        window.addEventListener('channelCreated', handleCustomChannelCreated);
 
         return () => {
             chatClient.off('channel.created', handleChannelCreated);
@@ -238,6 +247,7 @@ const CustomChannelList = ({ loading, error, channels, setActiveChannel, activeC
             chatClient.off('message.new', handleMessageNew);
             chatClient.off('connection.changed', handleConnectionChanged);
             chatClient.off('connection.recovered', handleConnectionChanged);
+            window.removeEventListener('channelCreated', handleCustomChannelCreated);
         };
     }, [chatClient, chatClient?.userID, refreshKey]);
 

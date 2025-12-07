@@ -50,29 +50,43 @@ const AddUserModal = ({ onClose, onChannelCreated }) => {
             
             if (chatClient) {
                 const channelId = result.channelId;
-                // Instead of just watching, let's query for the channel to ensure it exists
+                
+                // Give the backend a moment to fully create the channel
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // Query for the channel to ensure it exists and we have access
                 const channels = await chatClient.queryChannels({
                     id: channelId,
-                    type: 'messaging'
+                    type: 'messaging',
+                    members: { $in: [chatClient.userID] } // Ensure we're a member
                 });
                 
                 let channel;
                 if (channels.length > 0) {
                     channel = channels[0];
+                    // Watch the channel to ensure we're connected
+                    await channel.watch();
                 } else {
-                    // If channel doesn't exist in the query, create it
+                    // If channel doesn't exist in the query, try to create and watch it
                     channel = chatClient.channel('messaging', channelId);
+                    await channel.create({
+                        members: [chatClient.userID, foundUser._id]
+                    });
                     await channel.watch();
                 }
                 
                 if (onChannelCreated) {
                     onChannelCreated(channel);
                 }
+                
+                // Dispatch a custom event to refresh the channel list
+                window.dispatchEvent(new CustomEvent('channelCreated', { detail: { channelId } }));
             }
 
             toast.success('Chat started successfully!');
             onClose();
         } catch (error) {
+            console.error('Error creating channel:', error);
             toast.error(error.message || 'Failed to create channel');
         } finally {
             setIsCreatingChannel(false);
