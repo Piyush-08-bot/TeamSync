@@ -1,4 +1,12 @@
 {
+  "name": "team-sync-monorepo",
+  "version": "1.0.0",
+  "description": "Team Sync application monorepo",
+  "scripts": {
+    "build": "cd frontend && npm run build",
+    "dev": "cd frontend && npm run dev",
+    "start": "cd frontend && npm run dev"
+  },
   "dependencies": {
     "node-fetch": "^3.3.2"
   }
