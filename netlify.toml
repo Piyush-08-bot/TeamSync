@@ -1,7 +1,7 @@
 [build]
-  command = "npm run build"
-  publish = "frontend/dist"
-  base = "/"
+  base = "frontend"         # run build inside frontend
+  command = "npm run build" # frontend/package.json build script
+  publish = "dist"          # Vite outputs to dist
 
 [functions]
   node_version = "18"
