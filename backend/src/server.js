@@ -9,21 +9,35 @@ import cors from 'cors';
 
 const app = express();
 
-// Configure CORS for both development and production
-// Adding multiple possible frontend domains to handle different deployment scenarios
+// Enhanced CORS configuration
 const corsOptions = {
-  origin: [
-    ENV.CLIENT_URL,
-    'http://localhost:5176',
-    'http://localhost:5173',
-    'https://team-sync-beryl.vercel.app',
-    'https://team-sync-backend-orcin.vercel.app'  // Add the actual backend domain
-  ],
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // List of allowed origins
+    const allowedOrigins = [
+      ENV.CLIENT_URL, // Your frontend URL from environment variables
+      'http://localhost:5176',
+      'http://localhost:5173',
+      'http://127.0.0.1:5176',
+      'https://team-sync-beryl.vercel.app',
+      'https://team-sync-backend-orcin.vercel.app'
+    ];
+    
+    // Check if the origin is in our allowed list
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.log(`❌ CORS blocked request from origin: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   optionsSuccessStatus: 200,
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  exposedHeaders: ['Access-Control-Allow-Origin'] // Expose the header
+  exposedHeaders: ['Access-Control-Allow-Origin']
 };
 
 app.use(express.json({ limit: '10mb' }));
@@ -45,13 +59,12 @@ app.get('/health', async (req, res) => {
   const dbConnected = isDBConnected();
   res.status(200).json({
     status: 'OK',
-    timestamp: new Date().toISOString(),
     database: dbConnected ? 'Connected' : 'Disconnected',
     environment: ENV.NODE_ENV,
     streamApiKeySet: !!ENV.STREAM_API_KEY,
     streamApiSecretSet: !!ENV.STREAM_API_SECRET,
     clientId: ENV.CLIENT_URL,
-    corsOrigins: corsOptions.origin
+    corsOrigins: corsOptions.origin instanceof Function ? 'Dynamic function' : corsOptions.origin
   });
 });
 
@@ -71,7 +84,7 @@ connectDB().then(() => {
   console.log("  - DELETE /api/auth/profile");
   console.log("  - GET /api/chat/user/search");
   console.log("  - GET /api/chat/users");
-  console.log("  - GET /api/chat/test");
+  console.log("  - GET /api/chat/test");  // Add this line
   console.log("  - GET /api/stream/chat/token");
   console.log("  - GET /api/stream/video/token");
   console.log("  - GET /api/stream/test-new");  // Add this line
@@ -131,34 +144,18 @@ connectDB().then(() => {
     console.log("✅ Server running on port:", ENV.PORT);
     console.log("Environment:", ENV.NODE_ENV);
     console.log("Client URL:", ENV.CLIENT_URL);
-    console.log("CORS Origins:", corsOptions.origin);
+    console.log("CORS Origins:", Array.isArray(corsOptions.origin) ? corsOptions.origin : 'Dynamic function');
   });
 
   process.on('SIGINT', async () => {
     console.log('\nShutting down...');
     await disconnectDB();
     server.close(() => {
-      console.log('Server stopped');
+      console.log('Server closed');
       process.exit(0);
     });
   });
-
-}).catch((error) => {
-  console.error("❌ Database connection failed:", error.message);
+}).catch(err => {
+  console.error("❌ Failed to connect to database:", err.message);
   process.exit(1);
-});
-
-process.on('uncaughtException', (err) => {
-  console.error('UNCAUGHT EXCEPTION! 💥 Shutting down...');
-  console.error(err.name, err.message);
-  console.error(err.stack);
-  process.exit(1);
-});
-
-process.on('unhandledRejection', (err) => {
-  console.error('UNHANDLED REJECTION! 💥 Shutting down...');
-  console.error(err.name, err.message);
-  server.close(() => {
-    process.exit(1);
-  });
 });
