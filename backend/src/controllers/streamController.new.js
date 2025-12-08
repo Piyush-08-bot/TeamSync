@@ -1,6 +1,5 @@
 import { ENV } from "../config/env.js";
 import { StreamChat } from 'stream-chat';
-import { connectDB } from "../config/db.js";
 
 export const getChatToken = async (req, res) => {
     try {
@@ -74,75 +73,18 @@ export const getVideoToken = async (req, res) => {
 
 export const createDirectMessageChannel = async (req, res) => {
     try {
-        console.log("Starting createDirectMessageChannel function");
-        console.log("Request body:", req.body);
-        console.log("User from token:", req.user);
-
-        // Ensure database connection
-        try {
-            await connectDB();
-            console.log("Database connection established");
-        } catch (dbError) {
-            console.error("Database connection failed:", dbError.message);
-            return res.status(503).json({
-                success: false,
-                message: "Database connection failed",
-                error: dbError.message
-            });
-        }
-
         // Validate that we have the required credentials
         if (!ENV.STREAM_API_KEY || !ENV.STREAM_API_SECRET) {
-            console.error("Stream services not configured - Missing API key or secret");
             return res.status(501).json({
                 success: false,
-                message: "Stream services not configured - Missing API key or secret",
-                details: {
-                    hasApiKey: !!ENV.STREAM_API_KEY,
-                    hasApiSecret: !!ENV.STREAM_API_SECRET
-                }
-            });
-        }
-
-        // Log the credentials info (masked)
-        console.log("Stream API Key present:", !!ENV.STREAM_API_KEY);
-        console.log("Stream API Secret present:", !!ENV.STREAM_API_SECRET);
-        if (ENV.STREAM_API_KEY) {
-            console.log("Stream API Key (first 5 chars):", ENV.STREAM_API_KEY.substring(0, 5));
-        }
-
-        // Test if Stream credentials are valid
-        try {
-            console.log("Attempting to validate Stream credentials...");
-            const serverClient = StreamChat.getInstance(ENV.STREAM_API_KEY, ENV.STREAM_API_SECRET);
-            // Test the connection by getting the app settings
-            const appSettings = await serverClient.getAppSettings();
-            console.log("Stream credentials validated successfully", {
-                app: appSettings.app?.name,
-                organization: appSettings.app?.organization_name
-            });
-        } catch (credentialError) {
-            console.error("Stream credentials validation failed:", credentialError.message);
-            console.error("Credential error stack:", credentialError.stack);
-            return res.status(500).json({
-                success: false,
-                message: "Invalid Stream credentials - Please check your STREAM_API_KEY and STREAM_API_SECRET",
-                error: credentialError.message,
-                details: {
-                    hasApiKey: !!ENV.STREAM_API_KEY,
-                    hasApiSecret: !!ENV.STREAM_API_SECRET
-                }
+                message: "Stream services not configured"
             });
         }
 
         const { targetUserId } = req.body;
         const currentUserId = req.user._id.toString();
 
-        console.log("Current user ID:", currentUserId);
-        console.log("Target user ID:", targetUserId);
-
         if (!targetUserId) {
-            console.error("Target user ID is required");
             return res.status(400).json({
                 success: false,
                 message: "Target user ID is required"
@@ -150,7 +92,6 @@ export const createDirectMessageChannel = async (req, res) => {
         }
 
         if (targetUserId === currentUserId) {
-            console.error("Cannot create a channel with yourself");
             return res.status(400).json({
                 success: false,
                 message: "Cannot create a channel with yourself"
@@ -159,23 +100,6 @@ export const createDirectMessageChannel = async (req, res) => {
 
         // Create channel ID
         const channelId = [currentUserId, targetUserId].sort().join('-');
-        console.log("Generated channel ID:", channelId);
-
-        // Create Stream chat client
-        console.log("Creating StreamChat client with API key:", ENV.STREAM_API_KEY.substring(0, 5) + "...");
-        const serverClient = StreamChat.getInstance(ENV.STREAM_API_KEY, ENV.STREAM_API_SECRET);
-
-        // Create the channel with proper member configuration
-        const channel = serverClient.channel('messaging', channelId);
-
-        console.log("Creating channel with members:", [currentUserId, targetUserId]);
-        // Create or update the channel with both users as members
-        await channel.create({
-            members: [currentUserId, targetUserId],
-            created_by_id: currentUserId
-        });
-
-        console.log("Channel created successfully");
 
         res.status(200).json({
             success: true,
@@ -184,13 +108,11 @@ export const createDirectMessageChannel = async (req, res) => {
         });
 
     } catch (error) {
-        console.error("Error creating direct message channel:", error);
-        console.error("Error stack:", error.stack);
+        console.error("Error creating direct message channel:", error.message);
         res.status(500).json({
             success: false,
             message: 'Failed to create direct message channel',
-            error: error.message,
-            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+            error: error.message
         });
     }
 };
@@ -268,8 +190,7 @@ export const createVideoCall = async (req, res) => {
             });
         }
 
-        // Create a more unique call ID
-        const callId = `direct-${Date.now()}-${[currentUserId, targetUserId].sort().join('-')}`;
+        const callId = `direct-${[currentUserId, targetUserId].sort().join('-')}`;
 
         // Create Stream chat client
         const serverClient = StreamChat.getInstance(ENV.STREAM_API_KEY, ENV.STREAM_API_SECRET);
