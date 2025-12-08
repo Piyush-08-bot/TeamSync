@@ -2,10 +2,13 @@
   "name": "team-sync-monorepo",
   "version": "1.0.0",
   "description": "Team Sync application monorepo",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
-    "build": "cd frontend && npm run build",
-    "dev": "cd frontend && npm run dev",
-    "start": "cd frontend && npm run dev"
+    "build": "cd frontend && npm ci && npm run build",
+    "dev": "cd frontend && npm install && npm run dev",
+    "start": "cd frontend && npm install && npm run dev"
   },
   "dependencies": {
     "node-fetch": "^3.3.2"
