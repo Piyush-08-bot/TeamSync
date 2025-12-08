@@ -6,7 +6,7 @@ import '../styles/add-user-modal.css';
 
 const AddUserModal = ({ onClose, onChannelCreated }) => {
     const [searchInput, setSearchInput] = useState('');
-    const [searchType, setSearchType] = useState('email'); 
+    const [searchType, setSearchType] = useState('email');
     const [foundUser, setFoundUser] = useState(null);
     const [isSearching, setIsSearching] = useState(false);
     const [isCreatingChannel, setIsCreatingChannel] = useState(false);
@@ -24,14 +24,14 @@ const AddUserModal = ({ onClose, onChannelCreated }) => {
         try {
             const userId = searchType === 'userId' ? searchInput.trim() : null;
             const email = searchType === 'email' ? searchInput.trim() : null;
-            
-            console.log('Searching user:', { userId, email, searchType });
+
+            console.log('🔍 Searching user:', { userId, email, searchType });
             const user = await searchUser(userId, email);
-            console.log('User found:', user);
+            console.log('✅ User found:', user);
             setFoundUser(user);
             toast.success('User found!');
         } catch (error) {
-            console.error('Search error:', error);
+            console.error('❌ Search error:', error);
             const errorMessage = error.message || 'User not found. Please check the email address and try again.';
             toast.error(errorMessage);
             setFoundUser(null);
@@ -41,74 +41,113 @@ const AddUserModal = ({ onClose, onChannelCreated }) => {
     };
 
     const handleCreateChannel = async () => {
-        if (!foundUser) return;
+        if (!foundUser) {
+            toast.error('No user selected');
+            return;
+        }
+
+        if (!chatClient) {
+            toast.error('Chat client not initialized. Please refresh the page.');
+            return;
+        }
 
         setIsCreatingChannel(true);
+        console.log('\n🚀 === START CHANNEL CREATION ===');
+        console.log('Target user:', foundUser);
+        console.log('Chat client ready:', !!chatClient);
+        console.log('Current user ID:', chatClient.userID);
+
         try {
+            // Step 1: Create channel on backend
+            console.log('📡 Step 1: Creating channel on backend...');
             const result = await createDirectMessageChannel(foundUser._id);
-            
-            
-            if (chatClient) {
-                const channelId = result.channelId;
-                
-                // Give the backend a moment to fully create the channel
-                await new Promise(resolve => setTimeout(resolve, 500));
-                
-                // Query for the channel to ensure it exists and we have access
-                const channels = await chatClient.queryChannels({
-                    id: channelId,
-                    type: 'messaging',
-                    members: { $in: [chatClient.userID] } // Ensure we're a member
-                });
-                
-                let channel;
-                if (channels.length > 0) {
-                    channel = channels[0];
-                    // Watch the channel to ensure we're connected
-                    await channel.watch();
-                } else {
-                    // If channel doesn't exist in the query, try to create and watch it
-                    channel = chatClient.channel('messaging', channelId);
-                    await channel.create({
-                        members: [chatClient.userID, foundUser._id]
-                    });
-                    await channel.watch();
-                }
-                
-                if (onChannelCreated) {
-                    onChannelCreated(channel);
-                }
-                
-                // Dispatch a custom event to refresh the channel list
-                window.dispatchEvent(new CustomEvent('channelCreated', { detail: { channelId } }));
+            console.log('✅ Backend response:', result);
+
+            if (!result.channelId) {
+                throw new Error('No channel ID returned from backend');
             }
 
+            const channelId = result.channelId;
+            console.log('📝 Channel ID:', channelId);
+
+            // Step 2: Wait a moment for backend to fully create the channel
+            console.log('⏳ Step 2: Waiting for backend to complete...');
+            await new Promise(resolve => setTimeout(resolve, 800));
+
+            // Step 3: Get the channel from Stream
+            console.log('🔍 Step 3: Querying channel from Stream...');
+            const channel = chatClient.channel('messaging', channelId);
+
+            // Step 4: Watch the channel to ensure we're subscribed
+            console.log('👀 Step 4: Watching channel...');
+            await channel.watch();
+            console.log('✅ Channel watched successfully');
+
+            // Step 5: Notify parent component
+            if (onChannelCreated) {
+                console.log('📢 Step 5: Notifying parent component...');
+                onChannelCreated(channel);
+            }
+
+            // Step 6: Dispatch custom event for channel list refresh
+            console.log('📢 Step 6: Dispatching channelCreated event...');
+            window.dispatchEvent(new CustomEvent('channelCreated', {
+                detail: { channelId, channel }
+            }));
+
+            console.log('🎉 === CHANNEL CREATION COMPLETE ===\n');
             toast.success('Chat started successfully!');
             onClose();
+
         } catch (error) {
-            console.error('Error creating channel:', error);
-            toast.error(error.message || 'Failed to create channel');
+            console.error('❌ === CHANNEL CREATION FAILED ===');
+            console.error('Error:', error);
+            console.error('Error message:', error.message);
+            console.error('Error stack:', error.stack);
+            console.error('=================================\n');
+
+            // Provide user-friendly error messages
+            let errorMessage = 'Failed to create channel';
+
+            if (error.message.includes('500')) {
+                errorMessage = 'Server error. Please try again or contact support.';
+            } else if (error.message.includes('401') || error.message.includes('authentication')) {
+                errorMessage = 'Authentication failed. Please log in again.';
+            } else if (error.message.includes('network') || error.message.includes('fetch')) {
+                errorMessage = 'Network error. Please check your connection.';
+            } else if (error.message) {
+                errorMessage = error.message;
+            }
+
+            toast.error(errorMessage);
         } finally {
             setIsCreatingChannel(false);
         }
     };
 
     const handleStartVideoCall = async () => {
-        if (!foundUser) return;
+        if (!foundUser) {
+            toast.error('No user selected');
+            return;
+        }
 
         try {
+            console.log('📞 Creating video call with user:', foundUser._id);
             const result = await createVideoCall(foundUser._id);
+            console.log('✅ Video call created:', result);
+
             toast.success('Video call created!');
             onClose();
-            
+
             // Dispatch event with proper call type
-            window.dispatchEvent(new CustomEvent('startVideoCall', { 
-                detail: { 
+            window.dispatchEvent(new CustomEvent('startVideoCall', {
+                detail: {
                     callId: result.callId,
-                    callType: 'default'  // Specify the call type
-                } 
+                    callType: 'default'
+                }
             }));
         } catch (error) {
+            console.error('❌ Video call error:', error);
             toast.error(error.message || 'Failed to create video call');
         }
     };
@@ -138,7 +177,7 @@ const AddUserModal = ({ onClose, onChannelCreated }) => {
                 </div>
 
                 <div className="modal-body">
-                    {}
+                    {/* Search Type Toggle */}
                     <div className="form-group">
                         <label className="form-label">Search by</label>
                         <div className="search-type-toggle">
@@ -175,7 +214,7 @@ const AddUserModal = ({ onClose, onChannelCreated }) => {
                         </div>
                     </div>
 
-                    {}
+                    {/* Search Input */}
                     <div className="form-group">
                         <label htmlFor="searchInput" className="form-label">
                             {searchType === 'userId' ? 'User ID (MongoDB ObjectId)' : 'Email Address'}

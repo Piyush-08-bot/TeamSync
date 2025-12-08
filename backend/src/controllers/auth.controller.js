@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import { User } from "../models/user.model.js";
 import { connectDB } from "../config/db.js";
-
+import { upsertStreamUser } from "../config/streamConfig.js";
 import { ENV } from "../config/env.js";
 
 const generateToken = (userId) => {
@@ -31,6 +31,15 @@ export const registerUser = async (req, res) => {
         }
 
         const user = await User.create({ name, email, password });
+
+        // Upsert user to Stream Chat
+        try {
+            await upsertStreamUser(user);
+        } catch (streamError) {
+            console.error("Failed to upsert user to Stream Chat:", streamError.message);
+            // Don't fail the registration if Stream upsert fails
+        }
+
         const token = generateToken(user._id);
 
         res.status(201).json({
@@ -76,6 +85,14 @@ export const loginUser = async (req, res) => {
 
         if (!isPasswordCorrect) {
             return res.status(400).json({ message: "Invalid credentials" });
+        }
+
+        // Upsert user to Stream Chat on login
+        try {
+            await upsertStreamUser(user);
+        } catch (streamError) {
+            console.error("Failed to upsert user to Stream Chat:", streamError.message);
+            // Don't fail the login if Stream upsert fails
         }
 
         console.log('Generating token for user:', user._id);
@@ -150,6 +167,15 @@ export const updateUserProfile = async (req, res) => {
         user.isOnboarded = true;
 
         const updatedUser = await user.save();
+
+        // Upsert updated user to Stream Chat
+        try {
+            await upsertStreamUser(updatedUser);
+        } catch (streamError) {
+            console.error("Failed to upsert user to Stream Chat:", streamError.message);
+            // Don't fail the update if Stream upsert fails
+        }
+
         console.log('User profile updated successfully:', updatedUser._id);
 
         res.status(200).json({

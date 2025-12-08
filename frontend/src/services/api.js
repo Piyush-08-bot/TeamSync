@@ -38,7 +38,12 @@ export const getStreamVideoToken = async () => {
 
 export const createDirectMessageChannel = async (targetUserId) => {
     const token = getAuthToken();
-    const response = await fetch(`${API_BASE_URL}/stream/chat/channel`, {
+    const url = `${API_BASE_URL}/stream/chat/channel`;
+    console.log('🔵 Creating channel - URL:', url);
+    console.log('🔵 Target User ID:', targetUserId);
+    console.log('🔵 Has token:', !!token);
+
+    const response = await fetch(url, {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${token}`,
@@ -46,6 +51,9 @@ export const createDirectMessageChannel = async (targetUserId) => {
         },
         body: JSON.stringify({ targetUserId })
     });
+
+    console.log('🔵 Response status:', response.status);
+    console.log('🔵 Response OK:', response.ok);
 
     const contentType = response.headers.get('content-type');
     if (!response.ok) {
@@ -164,7 +172,7 @@ export const searchUser = async (userId, email) => {
     console.log('Response status:', response.status);
     console.log('Response headers:', Object.fromEntries(response.headers.entries()));
 
-    
+
     const contentType = response.headers.get('content-type');
     if (!contentType || !contentType.includes('application/json')) {
         const text = await response.text();

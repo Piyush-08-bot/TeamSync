@@ -74,9 +74,10 @@ export const getVideoToken = async (req, res) => {
 
 export const createDirectMessageChannel = async (req, res) => {
     try {
-        console.log("Starting createDirectMessageChannel function");
-        console.log("Request body:", req.body);
-        console.log("User from token:", req.user);
+        console.log("\n\n=== START createDirectMessageChannel ===");
+        console.log("Timestamp:", new Date().toISOString());
+        console.log("Request body:", JSON.stringify(req.body, null, 2));
+        console.log("User from token:", req.user ? JSON.stringify(req.user, null, 2) : "NO USER");
 
         // Ensure database connection
         try {
@@ -165,15 +166,62 @@ export const createDirectMessageChannel = async (req, res) => {
         console.log("Creating StreamChat client with API key:", ENV.STREAM_API_KEY.substring(0, 5) + "...");
         const serverClient = StreamChat.getInstance(ENV.STREAM_API_KEY, ENV.STREAM_API_SECRET);
 
-        // Create the channel with proper member configuration
-        const channel = serverClient.channel('messaging', channelId);
+        // Check if users exist in Stream
+        try {
+            console.log("Checking if users exist in Stream...");
+            const users = await serverClient.queryUsers({
+                id: { $in: [currentUserId, targetUserId] }
+            });
+            console.log("Users found in Stream:", users.users.length);
 
-        console.log("Creating channel with members:", [currentUserId, targetUserId]);
-        // Create or update the channel with both users as members
-        await channel.create({
+            // If users don't exist, upsert them
+            if (users.users.length < 2) {
+                console.log("Some users not found in Stream, upserting...");
+                // We'll need to get user details from DB to upsert
+                const { User } = await import("../models/user.model.js");
+                const [currentUser, targetUser] = await Promise.all([
+                    User.findById(currentUserId),
+                    User.findById(targetUserId)
+                ]);
+
+                const usersToUpsert = [];
+                if (currentUser) {
+                    usersToUpsert.push({
+                        id: currentUser._id.toString(),
+                        name: currentUser.name || currentUser.email,
+                        email: currentUser.email,
+                        image: currentUser.profilePic || undefined
+                    });
+                }
+
+                if (targetUser) {
+                    usersToUpsert.push({
+                        id: targetUser._id.toString(),
+                        name: targetUser.name || targetUser.email,
+                        email: targetUser.email,
+                        image: targetUser.profilePic || undefined
+                    });
+                }
+
+                if (usersToUpsert.length > 0) {
+                    await serverClient.upsertUsers(usersToUpsert);
+                    console.log("Upserted users to Stream:", usersToUpsert.length);
+                }
+            }
+        } catch (userCheckError) {
+            console.error("Error checking/upserting users in Stream:", userCheckError.message);
+            // Continue anyway as this might not be critical
+        }
+
+        // Create the channel with proper member configuration
+        const channel = serverClient.channel('messaging', channelId, {
             members: [currentUserId, targetUserId],
             created_by_id: currentUserId
         });
+
+        console.log("Creating channel with members:", [currentUserId, targetUserId]);
+        // Create or update the channel
+        await channel.create();
 
         console.log("Channel created successfully");
 
@@ -184,14 +232,36 @@ export const createDirectMessageChannel = async (req, res) => {
         });
 
     } catch (error) {
+        console.error("=== ERROR in createDirectMessageChannel ===");
         console.error("Error creating direct message channel:", error);
+        console.error("Error name:", error.name);
+        console.error("Error message:", error.message);
         console.error("Error stack:", error.stack);
+
+        // More specific error handling
+        if (error.code === 400) {
+            console.error("Bad request error - likely invalid user IDs or channel configuration");
+        } else if (error.code === 401) {
+            console.error("Authentication error - likely invalid API credentials");
+        } else if (error.code === 403) {
+            console.error("Permission error - user may not have permission to create channel");
+        } else if (error.code === 404) {
+            console.error("Not found error - likely invalid user IDs");
+        }
+
         res.status(500).json({
             success: false,
             message: 'Failed to create direct message channel',
             error: error.message,
-            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+            details: {
+                name: error.name,
+                code: error.code,
+                // Only include stack in development
+                stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+            }
         });
+    } finally {
+        console.log("=== END createDirectMessageChannel ===");
     }
 };
 
@@ -231,7 +301,7 @@ export const createGroupChannel = async (req, res) => {
         // Create the channel
         const channel = serverClient.channel('messaging', channelId);
         const allMemberIds = [currentUserId, ...userIds].map(id => id.toString());
-        
+
         await channel.create({
             name: groupName,
             members: allMemberIds,

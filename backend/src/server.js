@@ -14,19 +14,21 @@ const corsOptions = {
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
-    
+
     // List of allowed origins
     const allowedOrigins = [
       ENV.CLIENT_URL, // Your frontend URL from environment variables
+      'http://localhost:5174', // Vite dev server
       'http://localhost:5176',
       'http://localhost:5173',
+      'http://127.0.0.1:5174',
       'http://127.0.0.1:5176',
       'https://team-sync-beryl.vercel.app',
       'https://team-sync-frontend.netlify.app', // Add Netlify frontend
       'https://teamsync-kthq.onrender.com', // Add Render backend domain
       'https://team-sync-backend-orcin.vercel.app' // Keep Vercel backend domain
     ];
-    
+
     // Check if the origin is in our allowed list
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
