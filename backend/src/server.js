@@ -22,7 +22,9 @@ const corsOptions = {
       'http://localhost:5173',
       'http://127.0.0.1:5176',
       'https://team-sync-beryl.vercel.app',
-      'https://team-sync-backend-orcin.vercel.app'
+      'https://team-sync-frontend.netlify.app', // Add Netlify frontend
+      'https://teamsync-kthq.onrender.com', // Add Render backend domain
+      'https://team-sync-backend-orcin.vercel.app' // Keep Vercel backend domain
     ];
     
     // Check if the origin is in our allowed list
@@ -84,11 +86,11 @@ connectDB().then(() => {
   console.log("  - DELETE /api/auth/profile");
   console.log("  - GET /api/chat/user/search");
   console.log("  - GET /api/chat/users");
-  console.log("  - GET /api/chat/test");  // Add this line
+  console.log("  - GET /api/chat/test");
   console.log("  - GET /api/stream/chat/token");
   console.log("  - GET /api/stream/video/token");
-  console.log("  - GET /api/stream/test-new");  // Add this line
-  console.log("  - GET /api/stream/echo");     // Add this line
+  console.log("  - GET /api/stream/test-new");
+  console.log("  - GET /api/stream/echo");
   console.log("  - POST /api/stream/chat/channel");
   console.log("  - POST /api/stream/chat/group");
   console.log("  - POST /api/stream/video/call");
