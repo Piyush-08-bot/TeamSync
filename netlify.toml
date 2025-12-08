@@ -1,17 +1,9 @@
 [build]
-  base = "frontend"         # run build inside frontend
-  command = "npm run build" # frontend/package.json build script
-  publish = "dist"          # Vite outputs to dist
-
-[functions]
-  node_version = "18"
+  base = "frontend"
+  command = "npm run build"
+  publish = "dist"
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-
-[dev]
-  command = "npm run dev"
-  port = 8888
-  targetPort = 5173
