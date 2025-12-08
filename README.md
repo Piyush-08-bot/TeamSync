@@ -6,11 +6,11 @@
 
 ### 🖥️ Frontend (Deployed on Vercel)
 
-🔗 https://team-sync-beryl.vercel.app/
+🔗 https://team-sync-frontend.netlify.app/
 
 ### ⚙️ Backend (Deployed on Vercel)
 
-🔗 https://team-sync-backend.vercel.app/
+🔗 https://teamsync-kthq.onrender.com/
 
 ## Backend
 
