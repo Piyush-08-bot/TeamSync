@@ -222,9 +222,21 @@ export const createGroupChannel = async (req, res) => {
             });
         }
 
-        const allMemberIds = [currentUserId, ...userIds];
-        const uniqueMemberIds = [...new Set(allMemberIds.map(id => id.toString()))];
+        // Create Stream chat client
+        const serverClient = StreamChat.getInstance(ENV.STREAM_API_KEY, ENV.STREAM_API_SECRET);
+
+        // Create a unique channel ID
         const channelId = `group-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+        // Create the channel
+        const channel = serverClient.channel('messaging', channelId);
+        const allMemberIds = [currentUserId, ...userIds].map(id => id.toString());
+        
+        await channel.create({
+            name: groupName,
+            members: allMemberIds,
+            created_by_id: currentUserId
+        });
 
         res.status(201).json({
             success: true,
