@@ -1,6 +1,6 @@
 
 
-# Capstone Project - JWT Authentication Implementation
+# Capstone Project
 
 ## 🌐 Hosted Links
 
