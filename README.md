@@ -81,4 +81,4 @@
 - `POST /api/auth/register` - Register a new user
 - `POST /api/auth/login` - Login user
 
-- `GET /api/chat/stream-token` - Get Stream token (protected route)
+- `GET /api/chat/stream-token` - Get Stream token 
